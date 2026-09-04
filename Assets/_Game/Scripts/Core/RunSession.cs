@@ -1,0 +1,154 @@
+using System;
+using System.Collections.Generic;
+
+namespace RockPaperPistol.Core
+{
+    public enum RunPhase
+    {
+        AwaitingDeck,
+        InEncounter,
+        GameOver,
+        Victory
+    }
+
+    public readonly struct PlayResult
+    {
+        public PlayResult(
+            EncounterRoundResult round,
+            bool encounterEnded,
+            bool runEnded,
+            RunPhase phase,
+            int enemyIndex,
+            int enemiesDefeated)
+        {
+            Round = round;
+            EncounterEnded = encounterEnded;
+            RunEnded = runEnded;
+            Phase = phase;
+            EnemyIndex = enemyIndex;
+            EnemiesDefeated = enemiesDefeated;
+        }
+
+        public EncounterRoundResult Round { get; }
+        public bool EncounterEnded { get; }
+        public bool RunEnded { get; }
+        public RunPhase Phase { get; }
+        public int EnemyIndex { get; }
+        public int EnemiesDefeated { get; }
+    }
+
+    public sealed class RunSession
+    {
+        public const int EnemyCount = 3;
+
+        private readonly NamedEnemy[] _enemies;
+        private readonly DeckRuntime _deck = new DeckRuntime();
+
+        public RunSession(IReadOnlyList<NamedEnemy> enemies)
+        {
+            if (enemies == null)
+            {
+                throw new ArgumentNullException(nameof(enemies));
+            }
+
+            if (enemies.Count != EnemyCount)
+            {
+                throw new ArgumentException(
+                    $"A run precisa de exatamente {EnemyCount} inimigos.",
+                    nameof(enemies));
+            }
+
+            _enemies = new NamedEnemy[EnemyCount];
+            for (int i = 0; i < EnemyCount; i++)
+            {
+                _enemies[i] = enemies[i];
+            }
+
+            Phase = RunPhase.AwaitingDeck;
+        }
+
+        public RunSession() : this(DefaultCatalog.Enemies)
+        {
+        }
+
+        public RunPhase Phase { get; private set; }
+        public DeckRuntime Deck => _deck;
+        public Encounter CurrentEncounter { get; private set; }
+        public int EnemyIndex { get; private set; }
+        public int EnemiesDefeated { get; private set; }
+
+        public NamedEnemy CurrentEnemy =>
+            EnemyIndex >= 0 && EnemyIndex < _enemies.Length
+                ? _enemies[EnemyIndex]
+                : default;
+
+        public string CurrentEnemyName => CurrentEnemy.Name;
+
+        public IReadOnlyList<NamedEnemy> Enemies => _enemies;
+
+        public void SelectDeck(IReadOnlyList<Card> composition, Random rng = null)
+        {
+            if (composition == null)
+            {
+                throw new ArgumentNullException(nameof(composition));
+            }
+
+            if (rng != null)
+            {
+                _deck.SetRandom(rng);
+            }
+
+            _deck.ResetFrom(composition);
+            EnemyIndex = 0;
+            EnemiesDefeated = 0;
+            StartCurrentEncounter();
+        }
+
+        public PlayResult PlayFromHand(int handIndex)
+        {
+            if (Phase != RunPhase.InEncounter || CurrentEncounter == null)
+            {
+                throw new InvalidOperationException("Não há encontro em andamento.");
+            }
+
+            Card played = _deck.Play(handIndex);
+            EncounterRoundResult round = CurrentEncounter.PlayRound(played);
+
+            if (!CurrentEncounter.IsFinished)
+            {
+                _deck.DrawUpTo(DeckRuntime.DefaultHandSize);
+                return new PlayResult(
+                    round,
+                    encounterEnded: false,
+                    runEnded: false,
+                    Phase,
+                    EnemyIndex,
+                    EnemiesDefeated);
+            }
+
+            if (CurrentEncounter.Status == EncounterStatus.PlayerWon)
+            {
+                EnemiesDefeated += 1;
+                if (EnemiesDefeated >= EnemyCount)
+                {
+                    Phase = RunPhase.Victory;
+                    return new PlayResult(round, true, true, Phase, EnemyIndex, EnemiesDefeated);
+                }
+
+                EnemyIndex += 1;
+                StartCurrentEncounter();
+                return new PlayResult(round, true, false, Phase, EnemyIndex, EnemiesDefeated);
+            }
+
+            Phase = RunPhase.GameOver;
+            return new PlayResult(round, true, true, Phase, EnemyIndex, EnemiesDefeated);
+        }
+
+        private void StartCurrentEncounter()
+        {
+            _deck.PrepareEncounter(DeckRuntime.DefaultHandSize);
+            CurrentEncounter = new Encounter(_enemies[EnemyIndex].Sequence);
+            Phase = RunPhase.InEncounter;
+        }
+    }
+}

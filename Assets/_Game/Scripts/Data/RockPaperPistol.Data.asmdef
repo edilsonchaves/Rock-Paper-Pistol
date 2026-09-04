@@ -1,0 +1,16 @@
+{
+    "name": "RockPaperPistol.Data",
+    "rootNamespace": "RockPaperPistol.Data",
+    "references": [
+        "RockPaperPistol.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

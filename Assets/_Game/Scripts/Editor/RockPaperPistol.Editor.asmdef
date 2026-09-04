@@ -1,0 +1,19 @@
+{
+    "name": "RockPaperPistol.Editor",
+    "rootNamespace": "RockPaperPistol.EditorTools",
+    "references": [
+        "RockPaperPistol.Core",
+        "RockPaperPistol.Data"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

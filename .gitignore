@@ -104,3 +104,12 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# Núcleo C# testável fora do Unity
+!src/**/*.csproj
+!tests/**/*.csproj
+!RockPaperPistol.sln
+/src/**/bin/
+/src/**/obj/
+/tests/**/bin/
+/tests/**/obj/
