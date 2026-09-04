@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace RockPaperPistol.Core
 {
@@ -41,38 +40,29 @@ namespace RockPaperPistol.Core
 
     public sealed class Encounter
     {
-        public const int RoundsPerEncounter = 5;
+        public const int DefaultMaxTurns = 7;
+        public const int RoundsPerEncounter = DefaultMaxTurns;
 
-        private readonly Card[] _enemySequence;
+        private readonly int _maxTurns;
         private int _stake = 1;
 
-        public Encounter(IReadOnlyList<Card> enemySequence)
+        public Encounter(int maxTurns = DefaultMaxTurns)
         {
-            if (enemySequence == null)
+            if (maxTurns < 1)
             {
-                throw new ArgumentNullException(nameof(enemySequence));
+                throw new ArgumentOutOfRangeException(nameof(maxTurns), maxTurns, "MAX_TURNS deve ser pelo menos 1.");
             }
 
-            if (enemySequence.Count != RoundsPerEncounter)
-            {
-                throw new ArgumentException(
-                    $"O inimigo deve ter exatamente {RoundsPerEncounter} cartas.",
-                    nameof(enemySequence));
-            }
-
-            _enemySequence = new Card[RoundsPerEncounter];
-            for (int i = 0; i < RoundsPerEncounter; i++)
-            {
-                _enemySequence[i] = enemySequence[i];
-            }
+            _maxTurns = maxTurns;
         }
 
+        public int MaxTurns => _maxTurns;
         public int PlayerScore { get; private set; }
         public int EnemyScore { get; private set; }
         public int CurrentStake => _stake;
         public int RoundsPlayed { get; private set; }
-        public int RoundsRemaining => RoundsPerEncounter - RoundsPlayed;
-        public bool IsFinished => RoundsPlayed >= RoundsPerEncounter;
+        public int RoundsRemaining => _maxTurns - RoundsPlayed;
+        public bool IsFinished => RoundsPlayed >= _maxTurns;
 
         public EncounterStatus Status
         {
@@ -89,14 +79,13 @@ namespace RockPaperPistol.Core
             }
         }
 
-        public EncounterRoundResult PlayRound(Card player)
+        public EncounterRoundResult PlayRound(Card player, Card enemy)
         {
             if (IsFinished)
             {
                 throw new InvalidOperationException("O encontro já terminou.");
             }
 
-            Card enemy = _enemySequence[RoundsPlayed];
             RoundResolution resolution = CardComparer.Compare(player, enemy, _stake);
 
             if (resolution.Outcome == RoundOutcome.Draw)

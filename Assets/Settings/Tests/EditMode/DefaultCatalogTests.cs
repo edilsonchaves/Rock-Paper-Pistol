@@ -6,21 +6,31 @@ namespace RockPaperPistol.Tests
     public class DefaultCatalogTests
     {
         [Test]
-        public void PlayerDecks_HaveNineCards()
+        public void PlayerAndEnemy_ShareTheSameNineCardBaseDeck()
         {
-            Assert.AreEqual(9, DefaultCatalog.Equilibrado.Count);
-            Assert.AreEqual(9, DefaultCatalog.Agressivo.Count);
-            Assert.AreEqual(9, DefaultCatalog.Contrario.Count);
-            Assert.AreEqual(3, DefaultCatalog.Decks.Count);
+            Assert.AreEqual(DefaultCatalog.BaseDeckSize, DefaultCatalog.BaseDeck.Count);
+            Assert.AreEqual(1, DefaultCatalog.Decks.Count);
+            Assert.AreEqual("Baralho Base", DefaultCatalog.Decks[0].Name);
+            CollectionAssert.AreEqual(DefaultCatalog.BaseDeck, DefaultCatalog.Decks[0].Cards);
+
+            Assert.AreEqual(new Card(Suit.Rock, 1), DefaultCatalog.BaseDeck[0]);
+            Assert.AreEqual(new Card(Suit.Rock, 2), DefaultCatalog.BaseDeck[1]);
+            Assert.AreEqual(new Card(Suit.Rock, 3), DefaultCatalog.BaseDeck[2]);
+            Assert.AreEqual(new Card(Suit.Paper, 1), DefaultCatalog.BaseDeck[3]);
+            Assert.AreEqual(new Card(Suit.Paper, 2), DefaultCatalog.BaseDeck[4]);
+            Assert.AreEqual(new Card(Suit.Paper, 3), DefaultCatalog.BaseDeck[5]);
+            Assert.AreEqual(new Card(Suit.Scissors, 1), DefaultCatalog.BaseDeck[6]);
+            Assert.AreEqual(new Card(Suit.Scissors, 2), DefaultCatalog.BaseDeck[7]);
+            Assert.AreEqual(new Card(Suit.Scissors, 3), DefaultCatalog.BaseDeck[8]);
         }
 
         [Test]
-        public void Enemies_HaveFiveScriptedCards()
+        public void Enemies_UseTheSameNineCardBaseDeck()
         {
-            Assert.AreEqual(5, DefaultCatalog.EstatuaDePedra.Count);
-            Assert.AreEqual(5, DefaultCatalog.Mumia.Count);
-            Assert.AreEqual(5, DefaultCatalog.Pirata.Count);
             Assert.AreEqual(3, DefaultCatalog.Enemies.Count);
+            CollectionAssert.AreEqual(DefaultCatalog.BaseDeck, DefaultCatalog.Enemies[0].Sequence);
+            CollectionAssert.AreEqual(DefaultCatalog.BaseDeck, DefaultCatalog.Enemies[1].Sequence);
+            CollectionAssert.AreEqual(DefaultCatalog.BaseDeck, DefaultCatalog.Enemies[2].Sequence);
         }
 
         [Test]

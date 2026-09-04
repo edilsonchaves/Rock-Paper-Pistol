@@ -36,85 +36,32 @@ namespace RockPaperPistol.Core
     public static class DefaultCatalog
     {
         public const string PlayerName = "Pistoleiro";
+        public const string BaseDeckName = "Baralho Base";
+        public const int BaseDeckSize = 9;
 
-        public static readonly IReadOnlyList<Card> Equilibrado = new[]
+        public static readonly IReadOnlyList<Card> BaseDeck = new[]
         {
             new Card(Suit.Rock, 1),
+            new Card(Suit.Rock, 2),
             new Card(Suit.Rock, 3),
-            new Card(Suit.Rock, 4),
+            new Card(Suit.Paper, 1),
             new Card(Suit.Paper, 2),
             new Card(Suit.Paper, 3),
-            new Card(Suit.Paper, 5),
             new Card(Suit.Scissors, 1),
-            new Card(Suit.Scissors, 3),
-            new Card(Suit.Scissors, 4)
-        };
-
-        public static readonly IReadOnlyList<Card> Agressivo = new[]
-        {
-            new Card(Suit.Rock, 4),
-            new Card(Suit.Rock, 5),
-            new Card(Suit.Paper, 3),
-            new Card(Suit.Paper, 4),
-            new Card(Suit.Paper, 5),
-            new Card(Suit.Scissors, 1),
-            new Card(Suit.Scissors, 2),
             new Card(Suit.Scissors, 2),
             new Card(Suit.Scissors, 3)
         };
 
-        public static readonly IReadOnlyList<Card> Contrario = new[]
-        {
-            new Card(Suit.Rock, 2),
-            new Card(Suit.Rock, 3),
-            new Card(Suit.Rock, 4),
-            new Card(Suit.Paper, 1),
-            new Card(Suit.Paper, 2),
-            new Card(Suit.Paper, 3),
-            new Card(Suit.Scissors, 3),
-            new Card(Suit.Scissors, 4),
-            new Card(Suit.Scissors, 5)
-        };
-
-        public static readonly IReadOnlyList<Card> EstatuaDePedra = new[]
-        {
-            new Card(Suit.Rock, 2),
-            new Card(Suit.Rock, 3),
-            new Card(Suit.Paper, 1),
-            new Card(Suit.Rock, 4),
-            new Card(Suit.Scissors, 2)
-        };
-
-        public static readonly IReadOnlyList<Card> Mumia = new[]
-        {
-            new Card(Suit.Scissors, 3),
-            new Card(Suit.Paper, 2),
-            new Card(Suit.Scissors, 4),
-            new Card(Suit.Rock, 1),
-            new Card(Suit.Scissors, 5)
-        };
-
-        public static readonly IReadOnlyList<Card> Pirata = new[]
-        {
-            new Card(Suit.Paper, 4),
-            new Card(Suit.Rock, 5),
-            new Card(Suit.Scissors, 3),
-            new Card(Suit.Paper, 3),
-            new Card(Suit.Rock, 4)
-        };
-
         public static readonly IReadOnlyList<NamedDeck> Decks = new[]
         {
-            new NamedDeck("Equilibrado", Equilibrado),
-            new NamedDeck("Agressivo", Agressivo),
-            new NamedDeck("Contrário", Contrario)
+            new NamedDeck(BaseDeckName, BaseDeck)
         };
 
         public static readonly IReadOnlyList<NamedEnemy> Enemies = new[]
         {
-            new NamedEnemy("Estátua de Pedra", EstatuaDePedra, EnemyBehavior.Defensive),
-            new NamedEnemy("Múmia", Mumia, EnemyBehavior.Defensive),
-            new NamedEnemy("Pirata", Pirata, EnemyBehavior.Aggressive)
+            new NamedEnemy("Estátua de Pedra", BaseDeck, EnemyBehavior.Defensive),
+            new NamedEnemy("Múmia", BaseDeck, EnemyBehavior.Defensive),
+            new NamedEnemy("Pirata", BaseDeck, EnemyBehavior.Aggressive)
         };
 
         public static IReadOnlyList<IReadOnlyList<Card>> EnemySequences
@@ -123,9 +70,9 @@ namespace RockPaperPistol.Core
             {
                 return new IReadOnlyList<Card>[]
                 {
-                    EstatuaDePedra,
-                    Mumia,
-                    Pirata
+                    BaseDeck,
+                    BaseDeck,
+                    BaseDeck
                 };
             }
         }

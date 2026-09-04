@@ -9,18 +9,18 @@ namespace RockPaperPistol.Tests
     {
         private static IReadOnlyList<Card> NineCards()
         {
-            return DefaultCatalog.Equilibrado;
+            return DefaultCatalog.BaseDeck;
         }
 
         [Test]
-        public void ResetFrom_ThenDrawUpTo_FillsHandAndLeavesDrawPile()
+        public void ResetFrom_ThenDrawUpTo_FillsAllNineCardsInHand()
         {
             DeckRuntime deck = new DeckRuntime();
             deck.ResetFrom(NineCards());
             deck.DrawUpTo(DeckRuntime.DefaultHandSize);
 
-            Assert.AreEqual(3, deck.HandCount);
-            Assert.AreEqual(6, deck.DrawCount);
+            Assert.AreEqual(9, deck.HandCount);
+            Assert.AreEqual(0, deck.DrawCount);
             Assert.AreEqual(0, deck.DiscardCount);
             Assert.AreEqual(9, deck.Composition.Count);
         }
@@ -30,29 +30,31 @@ namespace RockPaperPistol.Tests
         {
             DeckRuntime deck = new DeckRuntime();
             deck.ResetFrom(NineCards());
-            deck.DrawUpTo(3);
+            deck.DrawUpTo(DeckRuntime.DefaultHandSize);
             Card expected = deck.Hand[1];
 
             Card played = deck.Play(1);
 
             Assert.AreEqual(expected, played);
-            Assert.AreEqual(2, deck.HandCount);
+            Assert.AreEqual(8, deck.HandCount);
             Assert.AreEqual(1, deck.DiscardCount);
             Assert.AreEqual(played, deck.Discard[0]);
+            Assert.IsFalse(ContainsCard(deck.Hand, played));
         }
 
         [Test]
-        public void DrawUpTo_AfterPlay_RefillsHandFromDrawPile()
+        public void DrawUpTo_AfterPlay_DoesNotReturnDiscardedCard()
         {
             DeckRuntime deck = new DeckRuntime();
             deck.ResetFrom(NineCards());
-            deck.DrawUpTo(3);
-            deck.Play(0);
-            deck.DrawUpTo(3);
+            deck.DrawUpTo(DeckRuntime.DefaultHandSize);
+            Card played = deck.Play(0);
+            deck.DrawUpTo(DeckRuntime.DefaultHandSize);
 
-            Assert.AreEqual(3, deck.HandCount);
-            Assert.AreEqual(5, deck.DrawCount);
+            Assert.AreEqual(8, deck.HandCount);
+            Assert.AreEqual(0, deck.DrawCount);
             Assert.AreEqual(1, deck.DiscardCount);
+            Assert.IsFalse(ContainsCard(deck.Hand, played));
         }
 
         [Test]
@@ -60,10 +62,10 @@ namespace RockPaperPistol.Tests
         {
             DeckRuntime deck = new DeckRuntime();
             deck.ResetFrom(NineCards());
-            deck.DrawUpTo(3);
+            deck.DrawUpTo(DeckRuntime.DefaultHandSize);
 
             Card first = deck.Play(0);
-            deck.DrawUpTo(3);
+            deck.DrawUpTo(DeckRuntime.DefaultHandSize);
             Card second = deck.Play(0);
 
             Assert.AreEqual(2, deck.DiscardCount);
@@ -74,18 +76,18 @@ namespace RockPaperPistol.Tests
         }
 
         [Test]
-        public void PrepareEncounter_ResetsFullDeckAndDrawsHand()
+        public void PrepareEncounter_ResetsFullDeckAndDrawsAllNine()
         {
             DeckRuntime deck = new DeckRuntime();
             deck.ResetFrom(NineCards());
-            deck.DrawUpTo(3);
+            deck.DrawUpTo(DeckRuntime.DefaultHandSize);
             deck.Play(0);
             deck.Play(0);
 
             deck.PrepareEncounter();
 
-            Assert.AreEqual(3, deck.HandCount);
-            Assert.AreEqual(6, deck.DrawCount);
+            Assert.AreEqual(9, deck.HandCount);
+            Assert.AreEqual(0, deck.DrawCount);
             Assert.AreEqual(0, deck.DiscardCount);
             Assert.AreEqual(9, deck.HandCount + deck.DrawCount + deck.DiscardCount);
         }

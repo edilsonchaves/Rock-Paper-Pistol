@@ -43,8 +43,10 @@ namespace RockPaperPistol.Core
 
         private readonly NamedEnemy[] _enemies;
         private readonly DeckRuntime _deck = new DeckRuntime();
+        private readonly DeckRuntime _enemyDeck = new DeckRuntime();
+        private readonly int _maxTurns;
 
-        public RunSession(IReadOnlyList<NamedEnemy> enemies)
+        public RunSession(IReadOnlyList<NamedEnemy> enemies, int maxTurns = Encounter.DefaultMaxTurns)
         {
             if (enemies == null)
             {
@@ -58,12 +60,18 @@ namespace RockPaperPistol.Core
                     nameof(enemies));
             }
 
+            if (maxTurns < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(maxTurns), maxTurns, "MAX_TURNS deve ser pelo menos 1.");
+            }
+
             _enemies = new NamedEnemy[EnemyCount];
             for (int i = 0; i < EnemyCount; i++)
             {
                 _enemies[i] = enemies[i];
             }
 
+            _maxTurns = maxTurns;
             Phase = RunPhase.AwaitingDeck;
         }
 
@@ -73,7 +81,9 @@ namespace RockPaperPistol.Core
 
         public RunPhase Phase { get; private set; }
         public DeckRuntime Deck => _deck;
+        public DeckRuntime EnemyDeck => _enemyDeck;
         public Encounter CurrentEncounter { get; private set; }
+        public int MaxTurns => _maxTurns;
         public int EnemyIndex { get; private set; }
         public int EnemiesDefeated { get; private set; }
 
@@ -112,7 +122,8 @@ namespace RockPaperPistol.Core
             }
 
             Card played = _deck.Play(handIndex);
-            EncounterRoundResult round = CurrentEncounter.PlayRound(played);
+            Card enemyPlayed = _enemyDeck.Play(0);
+            EncounterRoundResult round = CurrentEncounter.PlayRound(played, enemyPlayed);
 
             if (!CurrentEncounter.IsFinished)
             {
@@ -147,7 +158,9 @@ namespace RockPaperPistol.Core
         private void StartCurrentEncounter()
         {
             _deck.PrepareEncounter(DeckRuntime.DefaultHandSize);
-            CurrentEncounter = new Encounter(_enemies[EnemyIndex].Sequence);
+            _enemyDeck.ResetFrom(_enemies[EnemyIndex].Sequence);
+            _enemyDeck.DrawUpTo(DeckRuntime.DefaultHandSize);
+            CurrentEncounter = new Encounter(_maxTurns);
             Phase = RunPhase.InEncounter;
         }
     }

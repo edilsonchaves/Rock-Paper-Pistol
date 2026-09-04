@@ -14,8 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: RockPaperPistol.Data::RockPaperPistol.Data.GameContent
   Decks:
   - {fileID: 11400000, guid: 71ab82cd93ef04a15b26c37d48e59061, type: 2}
-  - {fileID: 11400000, guid: 72bc93de04f015b26c37d48e5906172a, type: 2}
-  - {fileID: 11400000, guid: 73cd04ef15a126c37d48e590617283aa, type: 2}
   Enemies:
   - {fileID: 11400000, guid: 81de15f026b237d48e590617283abb01, type: 2}
   - {fileID: 11400000, guid: 82ef26a137c348e590617283abb012c2, type: 2}

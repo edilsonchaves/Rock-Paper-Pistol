@@ -9,7 +9,7 @@ namespace RockPaperPistol.Data
     {
         public string DisplayName;
         public EnemyBehavior Behavior = EnemyBehavior.Defensive;
-        public CardData[] Sequence = new CardData[Encounter.RoundsPerEncounter];
+        public CardData[] Sequence = new CardData[DefaultCatalog.BaseDeckSize];
 
         public IReadOnlyList<Card> ToSequence()
         {

@@ -6,37 +6,22 @@ namespace RockPaperPistol.Tests
 {
     public class EncounterTests
     {
-        private static Encounter FiveRocks(int value)
-        {
-            return new Encounter(new[]
-            {
-                new Card(Suit.Rock, value),
-                new Card(Suit.Rock, value),
-                new Card(Suit.Rock, value),
-                new Card(Suit.Rock, value),
-                new Card(Suit.Rock, value)
-            });
-        }
-
         [Test]
         public void DrawThenWin_AwardsStackedStake()
         {
-            Encounter encounter = new Encounter(new[]
-            {
-                new Card(Suit.Scissors, 2),
-                new Card(Suit.Rock, 1),
-                new Card(Suit.Rock, 1),
-                new Card(Suit.Rock, 1),
-                new Card(Suit.Rock, 1)
-            });
+            Encounter encounter = new Encounter(Encounter.DefaultMaxTurns);
 
-            EncounterRoundResult draw = encounter.PlayRound(new Card(Suit.Scissors, 2));
+            EncounterRoundResult draw = encounter.PlayRound(
+                new Card(Suit.Scissors, 2),
+                new Card(Suit.Scissors, 2));
             Assert.AreEqual(RoundOutcome.Draw, draw.Resolution.Outcome);
             Assert.AreEqual(0, draw.PlayerScore);
             Assert.AreEqual(0, draw.EnemyScore);
             Assert.AreEqual(2, draw.NextStake);
 
-            EncounterRoundResult win = encounter.PlayRound(new Card(Suit.Rock, 5));
+            EncounterRoundResult win = encounter.PlayRound(
+                new Card(Suit.Rock, 3),
+                new Card(Suit.Rock, 1));
             Assert.AreEqual(RoundOutcome.PlayerWin, win.Resolution.Outcome);
             Assert.AreEqual(2, win.Resolution.StakeAwarded);
             Assert.AreEqual(2, win.PlayerScore);
@@ -46,59 +31,88 @@ namespace RockPaperPistol.Tests
         [Test]
         public void TwoDrawsThenWin_AwardsStakeOfThree()
         {
-            Encounter encounter = new Encounter(new[]
-            {
-                new Card(Suit.Paper, 3),
-                new Card(Suit.Paper, 3),
-                new Card(Suit.Rock, 1),
-                new Card(Suit.Rock, 1),
-                new Card(Suit.Rock, 1)
-            });
+            Encounter encounter = new Encounter(Encounter.DefaultMaxTurns);
 
-            encounter.PlayRound(new Card(Suit.Paper, 3));
-            encounter.PlayRound(new Card(Suit.Paper, 3));
-            EncounterRoundResult win = encounter.PlayRound(new Card(Suit.Paper, 5));
+            encounter.PlayRound(new Card(Suit.Paper, 3), new Card(Suit.Paper, 3));
+            encounter.PlayRound(new Card(Suit.Paper, 3), new Card(Suit.Paper, 3));
+            EncounterRoundResult win = encounter.PlayRound(
+                new Card(Suit.Paper, 3),
+                new Card(Suit.Rock, 1));
 
             Assert.AreEqual(3, win.Resolution.StakeAwarded);
             Assert.AreEqual(3, win.PlayerScore);
         }
 
         [Test]
-        public void AfterFiveRounds_HigherPlayerScore_WinsEncounter()
+        public void AfterMaxTurns_HigherPlayerScore_WinsEncounter()
         {
-            Encounter encounter = FiveRocks(1);
-            for (int i = 0; i < Encounter.RoundsPerEncounter; i++)
+            Encounter encounter = new Encounter(Encounter.DefaultMaxTurns);
+            for (int i = 0; i < Encounter.DefaultMaxTurns; i++)
             {
-                encounter.PlayRound(new Card(Suit.Rock, 5));
+                encounter.PlayRound(new Card(Suit.Rock, 3), new Card(Suit.Rock, 1));
             }
 
             Assert.IsTrue(encounter.IsFinished);
             Assert.AreEqual(EncounterStatus.PlayerWon, encounter.Status);
-            Assert.AreEqual(5, encounter.PlayerScore);
+            Assert.AreEqual(Encounter.DefaultMaxTurns, encounter.PlayerScore);
             Assert.AreEqual(0, encounter.EnemyScore);
+            Assert.AreEqual(7, encounter.MaxTurns);
         }
 
         [Test]
         public void TiedScore_IsPlayerLoss()
         {
-            Encounter encounter = new Encounter(new[]
-            {
-                new Card(Suit.Rock, 3),
-                new Card(Suit.Rock, 3),
-                new Card(Suit.Rock, 3),
-                new Card(Suit.Rock, 3),
-                new Card(Suit.Rock, 3)
-            });
+            Encounter encounter = new Encounter(3);
 
-            encounter.PlayRound(new Card(Suit.Rock, 5));
-            encounter.PlayRound(new Card(Suit.Rock, 1));
-            encounter.PlayRound(new Card(Suit.Rock, 5));
-            encounter.PlayRound(new Card(Suit.Rock, 1));
-            encounter.PlayRound(new Card(Suit.Rock, 3));
+            encounter.PlayRound(new Card(Suit.Rock, 3), new Card(Suit.Rock, 1));
+            encounter.PlayRound(new Card(Suit.Rock, 1), new Card(Suit.Rock, 3));
+            encounter.PlayRound(new Card(Suit.Rock, 2), new Card(Suit.Rock, 2));
 
-            Assert.AreEqual(2, encounter.PlayerScore);
-            Assert.AreEqual(2, encounter.EnemyScore);
+            Assert.AreEqual(1, encounter.PlayerScore);
+            Assert.AreEqual(1, encounter.EnemyScore);
             Assert.AreEqual(EncounterStatus.PlayerLost, encounter.Status);
+        }
+
+        [Test]
+        public void MaxTurns_IsConfigurable()
+        {
+            Encounter shortEncounter = new Encounter(2);
+            shortEncounter.PlayRound(new Card(Suit.Rock, 3), new Card(Suit.Rock, 1));
+            Assert.IsFalse(shortEncounter.IsFinished);
+            shortEncounter.PlayRound(new Card(Suit.Rock, 3), new Card(Suit.Rock, 1));
+            Assert.IsTrue(shortEncounter.IsFinished);
+            Assert.AreEqual(2, shortEncounter.MaxTurns);
+        }
+
+        [Test]
+        public void PlayerUsingCard_DoesNotRemoveEnemyCopy()
+        {
+            RunSession run = new RunSession(ThreeWithBaseDeck());
+            run.SelectDeck(DefaultCatalog.BaseDeck, new System.Random(1));
+
+            Card pedra3 = new Card(Suit.Rock, 3);
+            int playerIndex = IndexOf(run.Deck.Hand, pedra3);
+            Assert.GreaterOrEqual(playerIndex, 0);
+            Assert.IsTrue(ContainsCard(run.EnemyDeck.Hand, pedra3));
+
+            run.PlayFromHand(playerIndex);
+
+            Assert.IsFalse(ContainsCard(run.Deck.Hand, pedra3));
+            Assert.IsTrue(ContainsCard(run.Deck.Discard, pedra3));
+            Assert.IsTrue(ContainsCard(run.EnemyDeck.Hand, pedra3));
+        }
+
+        [Test]
+        public void RunSession_StartsWithNineAvailableCardsEach()
+        {
+            RunSession run = new RunSession(ThreeWithBaseDeck());
+            run.SelectDeck(DefaultCatalog.BaseDeck, new System.Random(1));
+
+            Assert.AreEqual(9, run.Deck.HandCount);
+            Assert.AreEqual(9, run.EnemyDeck.HandCount);
+            Assert.AreEqual(Encounter.DefaultMaxTurns, run.MaxTurns);
+            CollectionAssert.AreEqual(DefaultCatalog.BaseDeck, run.Deck.Composition);
+            CollectionAssert.AreEqual(DefaultCatalog.BaseDeck, run.EnemyDeck.Composition);
         }
 
         [Test]
@@ -106,13 +120,13 @@ namespace RockPaperPistol.Tests
         {
             IReadOnlyList<NamedEnemy> easyEnemies = new[]
             {
-                new NamedEnemy("A", FiveLow()),
-                new NamedEnemy("B", FiveLow()),
-                new NamedEnemy("C", FiveLow())
+                new NamedEnemy("A", NineWeak()),
+                new NamedEnemy("B", NineWeak()),
+                new NamedEnemy("C", NineWeak())
             };
 
             RunSession run = new RunSession(easyEnemies);
-            run.SelectDeck(DefaultCatalog.Equilibrado, new System.Random(1));
+            run.SelectDeck(NineStrong(), new System.Random(1));
 
             PlayUntilEncounterEnds(run);
             Assert.AreEqual(RunPhase.InEncounter, run.Phase);
@@ -120,7 +134,8 @@ namespace RockPaperPistol.Tests
             Assert.AreEqual(1, run.EnemiesDefeated);
             Assert.AreEqual(0, run.Deck.DiscardCount);
             Assert.AreEqual(9, run.Deck.HandCount + run.Deck.DrawCount);
-            Assert.AreEqual(3, run.Deck.HandCount);
+            Assert.AreEqual(9, run.Deck.HandCount);
+            Assert.AreEqual(9, run.EnemyDeck.HandCount);
         }
 
         [Test]
@@ -128,13 +143,13 @@ namespace RockPaperPistol.Tests
         {
             IReadOnlyList<NamedEnemy> hard = new[]
             {
-                new NamedEnemy("A", FiveHigh()),
-                new NamedEnemy("B", FiveHigh()),
-                new NamedEnemy("C", FiveHigh())
+                new NamedEnemy("A", SevenHigh()),
+                new NamedEnemy("B", SevenHigh()),
+                new NamedEnemy("C", SevenHigh())
             };
 
             RunSession run = new RunSession(hard);
-            run.SelectDeck(DefaultCatalog.Equilibrado, new System.Random(1));
+            run.SelectDeck(NineWeak(), new System.Random(1));
             PlayUntilEncounterEnds(run);
 
             Assert.AreEqual(RunPhase.GameOver, run.Phase);
@@ -146,13 +161,13 @@ namespace RockPaperPistol.Tests
         {
             IReadOnlyList<NamedEnemy> easyEnemies = new[]
             {
-                new NamedEnemy("A", FiveLow()),
-                new NamedEnemy("B", FiveLow()),
-                new NamedEnemy("C", FiveLow())
+                new NamedEnemy("A", NineWeak()),
+                new NamedEnemy("B", NineWeak()),
+                new NamedEnemy("C", NineWeak())
             };
 
             RunSession run = new RunSession(easyEnemies);
-            run.SelectDeck(DefaultCatalog.Equilibrado, new System.Random(7));
+            run.SelectDeck(NineStrong(), new System.Random(7));
             PlayUntilEncounterEnds(run);
             PlayUntilEncounterEnds(run);
             PlayUntilEncounterEnds(run);
@@ -161,10 +176,40 @@ namespace RockPaperPistol.Tests
             Assert.AreEqual(3, run.EnemiesDefeated);
         }
 
-        private static IReadOnlyList<Card> FiveLow()
+        private static IReadOnlyList<NamedEnemy> ThreeWithBaseDeck()
         {
             return new[]
             {
+                new NamedEnemy("A", DefaultCatalog.BaseDeck),
+                new NamedEnemy("B", DefaultCatalog.BaseDeck),
+                new NamedEnemy("C", DefaultCatalog.BaseDeck)
+            };
+        }
+
+        private static IReadOnlyList<Card> NineStrong()
+        {
+            return new[]
+            {
+                new Card(Suit.Paper, 3),
+                new Card(Suit.Paper, 3),
+                new Card(Suit.Paper, 3),
+                new Card(Suit.Paper, 3),
+                new Card(Suit.Paper, 3),
+                new Card(Suit.Paper, 3),
+                new Card(Suit.Paper, 3),
+                new Card(Suit.Paper, 3),
+                new Card(Suit.Paper, 3)
+            };
+        }
+
+        private static IReadOnlyList<Card> NineWeak()
+        {
+            return new[]
+            {
+                new Card(Suit.Rock, 1),
+                new Card(Suit.Rock, 1),
+                new Card(Suit.Rock, 1),
+                new Card(Suit.Rock, 1),
                 new Card(Suit.Rock, 1),
                 new Card(Suit.Rock, 1),
                 new Card(Suit.Rock, 1),
@@ -173,15 +218,17 @@ namespace RockPaperPistol.Tests
             };
         }
 
-        private static IReadOnlyList<Card> FiveHigh()
+        private static IReadOnlyList<Card> SevenHigh()
         {
             return new[]
             {
-                new Card(Suit.Rock, 5),
-                new Card(Suit.Rock, 5),
-                new Card(Suit.Rock, 5),
-                new Card(Suit.Rock, 5),
-                new Card(Suit.Rock, 5)
+                new Card(Suit.Rock, 3),
+                new Card(Suit.Rock, 3),
+                new Card(Suit.Rock, 3),
+                new Card(Suit.Rock, 3),
+                new Card(Suit.Rock, 3),
+                new Card(Suit.Rock, 3),
+                new Card(Suit.Rock, 3)
             };
         }
 
@@ -192,11 +239,29 @@ namespace RockPaperPistol.Tests
             while (encounter != null && !encounter.IsFinished)
             {
                 run.PlayFromHand(0);
-                if (++guard > 10)
+                if (++guard > 20)
                 {
                     Assert.Fail("Loop infinito no encontro.");
                 }
             }
+        }
+
+        private static int IndexOf(IReadOnlyList<Card> cards, Card target)
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (cards[i].Equals(target))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        private static bool ContainsCard(IReadOnlyList<Card> cards, Card target)
+        {
+            return IndexOf(cards, target) >= 0;
         }
     }
 }

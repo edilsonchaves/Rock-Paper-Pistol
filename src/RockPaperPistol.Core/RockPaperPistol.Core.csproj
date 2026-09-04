@@ -7,6 +7,6 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\Assets\Scripts\Core\**\*.cs" />
+    <Compile Include="..\..\Assets\_Game\Scripts\Core\**\*.cs" />
   </ItemGroup>
 </Project>
