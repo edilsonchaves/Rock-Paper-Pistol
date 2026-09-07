@@ -5,7 +5,7 @@ namespace RockPaperPistol.Core
 {
     public sealed class DeckRuntime
     {
-        public const int DefaultHandSize = 3;
+        public const int DefaultHandSize = 9;
 
         private readonly List<Card> _drawPile = new List<Card>();
         private readonly List<Card> _hand = new List<Card>();

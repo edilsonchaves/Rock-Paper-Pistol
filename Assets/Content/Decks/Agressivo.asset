@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8e2a91d0b74f3e9a16c5d8e7f20134, type: 3}
   m_Name: Agressivo
   m_EditorClassIdentifier: RockPaperPistol.Data::RockPaperPistol.Data.DeckDefinition
-  DisplayName: Agressivo
+  DisplayName: Baralho Base
   Cards:
   - Suit: 0
-    Value: 4
+    Value: 1
   - Suit: 0
-    Value: 5
-  - Suit: 1
+    Value: 2
+  - Suit: 0
     Value: 3
   - Suit: 1
-    Value: 4
+    Value: 1
   - Suit: 1
-    Value: 5
+    Value: 2
+  - Suit: 1
+    Value: 3
   - Suit: 2
     Value: 1
-  - Suit: 2
-    Value: 2
   - Suit: 2
     Value: 2
   - Suit: 2

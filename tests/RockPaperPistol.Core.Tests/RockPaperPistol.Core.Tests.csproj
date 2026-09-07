@@ -16,6 +16,6 @@
     <ProjectReference Include="..\..\src\RockPaperPistol.Core\RockPaperPistol.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Assets\Scripts\Tests\EditMode\*.cs" />
+    <Compile Include="..\..\Assets\Settings\Tests\EditMode\*.cs" />
   </ItemGroup>
 </Project>

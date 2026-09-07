@@ -15,13 +15,21 @@ MonoBehaviour:
   DisplayName: Pirata
   Behavior: 1
   Sequence:
-  - Suit: 1
-    Value: 4
   - Suit: 0
-    Value: 5
+    Value: 1
+  - Suit: 0
+    Value: 2
+  - Suit: 0
+    Value: 3
+  - Suit: 1
+    Value: 1
+  - Suit: 1
+    Value: 2
+  - Suit: 1
+    Value: 3
+  - Suit: 2
+    Value: 1
+  - Suit: 2
+    Value: 2
   - Suit: 2
     Value: 3
-  - Suit: 1
-    Value: 3
-  - Suit: 0
-    Value: 4

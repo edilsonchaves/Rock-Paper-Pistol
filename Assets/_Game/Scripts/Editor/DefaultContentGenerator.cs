@@ -8,43 +8,39 @@ namespace RockPaperPistol.EditorTools
 {
     public static class DefaultContentGenerator
     {
-        private const string Root = "Assets/Content";
+        private const string Root = "Assets/_Game/Content";
 
         [MenuItem("Rock Paper Pistol/Gerar conteúdo padrão")]
         public static void Generate()
         {
             if (!AssetDatabase.IsValidFolder(Root))
             {
-                AssetDatabase.CreateFolder("Assets", "Content");
-                AssetDatabase.CreateFolder(Root, "Decks");
-                AssetDatabase.CreateFolder(Root, "Enemies");
+                AssetDatabase.CreateFolder("Assets/_Game", "Content");
             }
 
             EnsureFolder(Root + "/Decks");
             EnsureFolder(Root + "/Enemies");
 
-            DeckDefinition equilibrado = WriteDeck("Equilibrado", DefaultCatalog.Equilibrado);
-            DeckDefinition agressivo = WriteDeck("Agressivo", DefaultCatalog.Agressivo);
-            DeckDefinition contrario = WriteDeck("Contrário", DefaultCatalog.Contrario);
+            DeckDefinition baseDeck = WriteDeck(DefaultCatalog.BaseDeckName, DefaultCatalog.BaseDeck);
 
             EnemyDefinition estatua = WriteEnemy(
                 "EstatuaDePedra",
                 "Estátua de Pedra",
-                DefaultCatalog.EstatuaDePedra,
+                DefaultCatalog.BaseDeck,
                 EnemyBehavior.Defensive);
             EnemyDefinition mumia = WriteEnemy(
                 "Mumia",
                 "Múmia",
-                DefaultCatalog.Mumia,
+                DefaultCatalog.BaseDeck,
                 EnemyBehavior.Defensive);
             EnemyDefinition pirata = WriteEnemy(
                 "Pirata",
                 "Pirata",
-                DefaultCatalog.Pirata,
+                DefaultCatalog.BaseDeck,
                 EnemyBehavior.Aggressive);
 
             GameContent content = LoadOrCreate<GameContent>(Root + "/GameContent.asset");
-            content.Decks = new[] { equilibrado, agressivo, contrario };
+            content.Decks = new[] { baseDeck };
             content.Enemies = new[] { estatua, mumia, pirata };
             EditorUtility.SetDirty(content);
 
@@ -120,7 +116,7 @@ namespace RockPaperPistol.EditorTools
 
         private static string Sanitize(string name)
         {
-            return name.Replace("á", "a").Replace("Á", "A");
+            return name.Replace("á", "a").Replace("Á", "A").Replace(" ", "");
         }
     }
 }

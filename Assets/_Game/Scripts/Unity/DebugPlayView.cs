@@ -6,6 +6,7 @@ namespace RockPaperPistol.Unity
     public sealed class DebugPlayView : MonoBehaviour
     {
         private GameSessionDriver _driver;
+        private AudioManager _audio;
         private Vector2 _scroll;
 
         private void Awake()
@@ -14,6 +15,12 @@ namespace RockPaperPistol.Unity
             if (_driver == null)
             {
                 _driver = gameObject.AddComponent<GameSessionDriver>();
+            }
+
+            _audio = GetComponent<AudioManager>();
+            if (_audio == null)
+            {
+                _audio = gameObject.AddComponent<AudioManager>();
             }
         }
 
@@ -31,6 +38,7 @@ namespace RockPaperPistol.Unity
 
             GameObject root = new GameObject("RockPaperPistol");
             root.AddComponent<GameSessionDriver>();
+            root.AddComponent<AudioManager>();
             root.AddComponent<DebugPlayView>();
         }
 
@@ -78,8 +86,9 @@ namespace RockPaperPistol.Unity
 
         private void DrawDeckSelect()
         {
-            GUILayout.Label("Pistoleiro: escolha o baralho. Depois disso ele não muda.");
-            GUILayout.Label("Ordem dos oponentes: Estátua de Pedra (defensivo) → Múmia (defensivo) → Pirata (agressivo).");
+            GUILayout.Label("Pistoleiro e inimigo usam o mesmo baralho base de 9 cartas, em conjuntos independentes.");
+            GUILayout.Label($"Turnos por encontro: {Encounter.DefaultMaxTurns} (MAX_TURNS configurável).");
+            GUILayout.Label("Ordem dos oponentes: Estátua de Pedra → Múmia → Pirata.");
             GUILayout.Space(8);
 
             var decks = _driver.Decks;
@@ -101,29 +110,46 @@ namespace RockPaperPistol.Unity
             GUILayout.Label($"{DefaultCatalog.PlayerName} vs {enemy} ({style})  —  {session.EnemyIndex + 1}/3", Header());
             GUILayout.Label(
                 $"Placar  {DefaultCatalog.PlayerName} {encounter.PlayerScore}  ×  {encounter.EnemyScore}  {enemy}    " +
-                $"Round {encounter.RoundsPlayed + 1}/{Encounter.RoundsPerEncounter}    " +
-                $"Este round vale {encounter.CurrentStake} ponto(s)");
+                $"Turno {encounter.RoundsPlayed + 1}/{encounter.MaxTurns}    " +
+                $"Este turno vale {encounter.CurrentStake} ponto(s)");
+            GUILayout.Label(
+                $"Cartas disponíveis: você {session.Deck.HandCount}  ·  inimigo {session.EnemyDeck.HandCount}");
 
-            DrawLastPlay();
+            DrawResolution();
             GUILayout.Space(8);
-            GUILayout.Label("Sua mão — clique para jogar:");
 
-            for (int i = 0; i < session.Deck.Hand.Count; i++)
+            if (_driver.IsResolving)
             {
-                Card card = session.Deck.Hand[i];
-                if (GUILayout.Button(card.ToString(), GUILayout.Height(36)))
+                GUILayout.Label("Resolvendo o turno...");
+                GUILayout.Label("Sua mão (indisponível durante a resolução): " + FormatCards(session.Deck.Hand));
+            }
+            else
+            {
+                GUILayout.Label("Suas 9 cartas disponíveis — clique para jogar:");
+                for (int i = 0; i < session.Deck.Hand.Count; i++)
                 {
-                    _driver.PlayFromHand(i);
+                    Card card = session.Deck.Hand[i];
+                    if (GUILayout.Button(card.ToString(), GUILayout.Height(36)))
+                    {
+                        _driver.PlayFromHandAnimated(i);
+                    }
                 }
             }
 
             GUILayout.Space(8);
-            GUILayout.Label($"Compra: {session.Deck.DrawCount}   Descarte: {session.Deck.DiscardCount}");
-            GUILayout.Label("Descarte: " + FormatCards(session.Deck.Discard));
+            GUILayout.Label($"Descarte do Pistoleiro ({session.Deck.DiscardCount}): " + FormatCards(session.Deck.Discard));
+            GUILayout.Label($"Descarte do inimigo ({session.EnemyDeck.DiscardCount}): " + FormatCards(session.EnemyDeck.Discard));
+            DrawAudioHook();
         }
 
-        private void DrawLastPlay()
+        private void DrawResolution()
         {
+            if (_driver.ResolutionStep == ResolutionStep.Selected && _driver.SelectedPlayerCard.HasValue)
+            {
+                GUILayout.Box($"Carta escolhida: {DefaultCatalog.PlayerName} {_driver.SelectedPlayerCard.Value}");
+                return;
+            }
+
             if (!_driver.LastPlay.HasValue)
             {
                 GUILayout.Label("O oponente revela a carta só depois da jogada do Pistoleiro.");
@@ -132,23 +158,48 @@ namespace RockPaperPistol.Unity
 
             PlayResult play = _driver.LastPlay.Value;
             EncounterRoundResult round = play.Round;
-            string outcome;
-            switch (round.Resolution.Outcome)
+            ResolutionStep step = _driver.ResolutionStep;
+
+            if (step == ResolutionStep.None && !_driver.IsResolving)
             {
-                case RoundOutcome.PlayerWin:
-                    outcome = $"{DefaultCatalog.PlayerName} ganhou (+{round.Resolution.StakeAwarded})";
-                    break;
-                case RoundOutcome.EnemyWin:
-                    outcome = $"{EnemyNameForLastPlay()} ganhou (+{round.Resolution.StakeAwarded})";
-                    break;
-                default:
-                    outcome = "Empate — próximo round vale +1";
-                    break;
+                DrawFullResult(play, round);
+                return;
             }
 
+            if (step >= ResolutionStep.Revealed)
+            {
+                GUILayout.Box(
+                    $"Cartas reveladas: {DefaultCatalog.PlayerName} {round.PlayerCard}  vs  " +
+                    $"{EnemyNameForLastPlay()} {round.EnemyCard}");
+            }
+
+            if (step >= ResolutionStep.SuitChecked)
+            {
+                GUILayout.Box(DescribeSuitCheck(round.PlayerCard, round.EnemyCard));
+            }
+
+            if (step >= ResolutionStep.ValueChecked)
+            {
+                GUILayout.Box(
+                    $"Valor: {DefaultCatalog.PlayerName} {round.PlayerCard.Value} → {round.Resolution.PlayerAdjusted}    " +
+                    $"{EnemyNameForLastPlay()} {round.EnemyCard.Value} → {round.Resolution.EnemyAdjusted}");
+            }
+
+            if (step >= ResolutionStep.ResultShown)
+            {
+                GUILayout.Box(DescribeOutcome(round));
+                if (play.EncounterEnded && play.Phase == RunPhase.InEncounter)
+                {
+                    GUILayout.Box("Oponente derrotado. Baralho restaurado. Próximo oponente.");
+                }
+            }
+        }
+
+        private void DrawFullResult(PlayResult play, EncounterRoundResult round)
+        {
             GUILayout.Box(
-                $"Último round: {DefaultCatalog.PlayerName} {round.PlayerCard} ({round.Resolution.PlayerAdjusted})  vs  " +
-                $"{EnemyNameForLastPlay()} {round.EnemyCard} ({round.Resolution.EnemyAdjusted})\n{outcome}");
+                $"Último turno: {DefaultCatalog.PlayerName} {round.PlayerCard} ({round.Resolution.PlayerAdjusted})  vs  " +
+                $"{EnemyNameForLastPlay()} {round.EnemyCard} ({round.Resolution.EnemyAdjusted})\n{DescribeOutcome(round)}");
 
             if (play.EncounterEnded && play.Phase == RunPhase.InEncounter)
             {
@@ -166,12 +217,27 @@ namespace RockPaperPistol.Unity
                     $"{session.CurrentEncounter.EnemyScore} {session.CurrentEnemyName}");
             }
 
-            DrawLastPlay();
+            if (_driver.LastPlay.HasValue)
+            {
+                DrawFullResult(_driver.LastPlay.Value, _driver.LastPlay.Value.Round);
+            }
+
+            DrawAudioHook();
             GUILayout.Space(8);
-            if (GUILayout.Button("Nova run — escolher baralho de novo", GUILayout.Height(40)))
+            if (GUILayout.Button("Nova run — baralho base de novo", GUILayout.Height(40)))
             {
                 _driver.Restart();
             }
+        }
+
+        private void DrawAudioHook()
+        {
+            if (_audio == null || !_audio.LastEvent.HasValue)
+            {
+                return;
+            }
+
+            GUILayout.Label($"Áudio preparado: {_audio.LastEvent.Value}");
         }
 
         private string EnemyNameForLastPlay()
@@ -184,6 +250,34 @@ namespace RockPaperPistol.Unity
             }
 
             return _driver.Session.CurrentEnemyName;
+        }
+
+        private static string DescribeOutcome(EncounterRoundResult round)
+        {
+            switch (round.Resolution.Outcome)
+            {
+                case RoundOutcome.PlayerWin:
+                    return $"{DefaultCatalog.PlayerName} ganhou (+{round.Resolution.StakeAwarded})";
+                case RoundOutcome.EnemyWin:
+                    return $"Oponente ganhou (+{round.Resolution.StakeAwarded})";
+                default:
+                    return "Empate — próximo turno vale +1";
+            }
+        }
+
+        private static string DescribeSuitCheck(Card player, Card enemy)
+        {
+            if (CardComparer.Beats(player.Suit, enemy.Suit))
+            {
+                return $"Naipe: {Card.SuitName(player.Suit)} vence {Card.SuitName(enemy.Suit)} (+1 para {DefaultCatalog.PlayerName})";
+            }
+
+            if (CardComparer.Beats(enemy.Suit, player.Suit))
+            {
+                return $"Naipe: {Card.SuitName(enemy.Suit)} vence {Card.SuitName(player.Suit)} (+1 para o oponente)";
+            }
+
+            return "Naipe: iguais, sem bônus";
         }
 
         private static string FormatCards(System.Collections.Generic.IReadOnlyList<Card> cards)
