@@ -23,21 +23,9 @@ namespace RockPaperPistol.EditorTools
 
             DeckDefinition baseDeck = WriteDeck(DefaultCatalog.BaseDeckName, DefaultCatalog.BaseDeck);
 
-            EnemyDefinition estatua = WriteEnemy(
-                "EstatuaDePedra",
-                "Estátua de Pedra",
-                DefaultCatalog.BaseDeck,
-                EnemyBehavior.Defensive);
-            EnemyDefinition mumia = WriteEnemy(
-                "Mumia",
-                "Múmia",
-                DefaultCatalog.BaseDeck,
-                EnemyBehavior.Defensive);
-            EnemyDefinition pirata = WriteEnemy(
-                "Pirata",
-                "Pirata",
-                DefaultCatalog.BaseDeck,
-                EnemyBehavior.Aggressive);
+            EnemyDefinition estatua = WriteEnemy(DefaultCatalog.Enemies[0], "EstatuaDePedra");
+            EnemyDefinition mumia = WriteEnemy(DefaultCatalog.Enemies[1], "Mumia");
+            EnemyDefinition pirata = WriteEnemy(DefaultCatalog.Enemies[2], "Pirata");
 
             GameContent content = LoadOrCreate<GameContent>(Root + "/GameContent.asset");
             content.Decks = new[] { baseDeck };
@@ -75,17 +63,16 @@ namespace RockPaperPistol.EditorTools
             return deck;
         }
 
-        private static EnemyDefinition WriteEnemy(
-            string fileName,
-            string displayName,
-            System.Collections.Generic.IReadOnlyList<Card> sequence,
-            EnemyBehavior behavior)
+        private static EnemyDefinition WriteEnemy(NamedEnemy named, string fileName)
         {
             string path = $"{Root}/Enemies/{fileName}.asset";
             EnemyDefinition enemy = LoadOrCreate<EnemyDefinition>(path);
-            enemy.DisplayName = displayName;
-            enemy.Behavior = behavior;
-            enemy.Sequence = ToData(sequence);
+            enemy.DisplayName = named.Name;
+            enemy.Behavior = named.Behavior;
+            enemy.PreferredSuit = named.PreferredSuit;
+            enemy.Pistol = named.Pistol.HasValue ? named.Pistol.Value.Pistol : PistolId.None;
+            enemy.PistolAvailableFromTurn = named.PistolAvailableFromTurn;
+            enemy.Sequence = ToData(named.Sequence);
             EditorUtility.SetDirty(enemy);
             return enemy;
         }

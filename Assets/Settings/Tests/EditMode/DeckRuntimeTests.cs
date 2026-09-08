@@ -93,6 +93,23 @@ namespace RockPaperPistol.Tests
         }
 
         [Test]
+        public void PrepareMatchHand_DrawsEightBasicsAddsPistolAndExcludesTheRest()
+        {
+            DeckRuntime deck = new DeckRuntime();
+            deck.ResetFrom(NineCards());
+            deck.SetRandom(new Random(3));
+            Card pistol = Card.CreatePistol(PistolId.Pistoleiro);
+
+            deck.PrepareMatchHand(pistol);
+
+            Assert.AreEqual(9, deck.HandCount);
+            Assert.AreEqual(0, deck.DrawCount);
+            Assert.AreEqual(1, deck.Excluded.Count);
+            Assert.IsTrue(ContainsCard(deck.Hand, pistol));
+            Assert.AreEqual(8, CountBasics(deck.Hand));
+        }
+
+        [Test]
         public void Shuffle_WithFixedSeed_IsDeterministic()
         {
             DeckRuntime a = new DeckRuntime();
@@ -106,6 +123,20 @@ namespace RockPaperPistol.Tests
             b.Shuffle();
 
             CollectionAssert.AreEqual(a.DrawPile, b.DrawPile);
+        }
+
+        private static int CountBasics(IReadOnlyList<Card> cards)
+        {
+            int count = 0;
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (!cards[i].IsPistol)
+                {
+                    count += 1;
+                }
+            }
+
+            return count;
         }
 
         private static bool ContainsCard(IReadOnlyList<Card> cards, Card target)
