@@ -86,7 +86,7 @@ namespace RockPaperPistol.Unity
 
         private void DrawDeckSelect()
         {
-            GUILayout.Label("Pistoleiro e inimigo usam o mesmo baralho base de 9 cartas, em conjuntos independentes.");
+            GUILayout.Label("Cada lado saca 8 cartas do baralho base e soma a própria Pistola.");
             GUILayout.Label($"Turnos por encontro: {Encounter.DefaultMaxTurns} (MAX_TURNS configurável).");
             GUILayout.Label("Ordem dos oponentes: Estátua de Pedra → Múmia → Pirata.");
             GUILayout.Space(8);
@@ -109,11 +109,14 @@ namespace RockPaperPistol.Unity
             string style = EnemyBehaviorText.Label(session.CurrentEnemy.Behavior);
             GUILayout.Label($"{DefaultCatalog.PlayerName} vs {enemy} ({style})  —  {session.EnemyIndex + 1}/3", Header());
             GUILayout.Label(
+                $"Tendência do oponente: {Card.SuitName(session.CurrentEnemy.PreferredSuit)} (35% neste naipe, 65% aleatório)");
+            GUILayout.Label(
                 $"Placar  {DefaultCatalog.PlayerName} {encounter.PlayerScore}  ×  {encounter.EnemyScore}  {enemy}    " +
                 $"Turno {encounter.RoundsPlayed + 1}/{encounter.MaxTurns}    " +
                 $"Este turno vale {encounter.CurrentStake} ponto(s)");
             GUILayout.Label(
-                $"Cartas disponíveis: você {session.Deck.HandCount}  ·  inimigo {session.EnemyDeck.HandCount}");
+                $"Cartas disponíveis: você {session.Deck.HandCount}  ·  inimigo {session.EnemyDeck.HandCount}    " +
+                $"De fora: você {FormatCards(session.Deck.Excluded)}  ·  inimigo {FormatCards(session.EnemyDeck.Excluded)}");
 
             DrawResolution();
             GUILayout.Space(8);
@@ -125,7 +128,7 @@ namespace RockPaperPistol.Unity
             }
             else
             {
-                GUILayout.Label("Suas 9 cartas disponíveis — clique para jogar:");
+                GUILayout.Label("Sua mão (8 básicas + Pistola) — clique para jogar:");
                 for (int i = 0; i < session.Deck.Hand.Count; i++)
                 {
                     Card card = session.Deck.Hand[i];
@@ -175,7 +178,7 @@ namespace RockPaperPistol.Unity
 
             if (step >= ResolutionStep.SuitChecked)
             {
-                GUILayout.Box(DescribeSuitCheck(round.PlayerCard, round.EnemyCard));
+                GUILayout.Box(DescribeSuitCheck(round.Resolution.PlayerSuit, round.Resolution.EnemySuit));
             }
 
             if (step >= ResolutionStep.ValueChecked)
@@ -265,16 +268,16 @@ namespace RockPaperPistol.Unity
             }
         }
 
-        private static string DescribeSuitCheck(Card player, Card enemy)
+        private static string DescribeSuitCheck(Suit playerSuit, Suit enemySuit)
         {
-            if (CardComparer.Beats(player.Suit, enemy.Suit))
+            if (CardComparer.Beats(playerSuit, enemySuit))
             {
-                return $"Naipe: {Card.SuitName(player.Suit)} vence {Card.SuitName(enemy.Suit)} (+1 para {DefaultCatalog.PlayerName})";
+                return $"Naipe: {Card.SuitName(playerSuit)} vence {Card.SuitName(enemySuit)} (+1 para {DefaultCatalog.PlayerName})";
             }
 
-            if (CardComparer.Beats(enemy.Suit, player.Suit))
+            if (CardComparer.Beats(enemySuit, playerSuit))
             {
-                return $"Naipe: {Card.SuitName(enemy.Suit)} vence {Card.SuitName(player.Suit)} (+1 para o oponente)";
+                return $"Naipe: {Card.SuitName(enemySuit)} vence {Card.SuitName(playerSuit)} (+1 para o oponente)";
             }
 
             return "Naipe: iguais, sem bônus";

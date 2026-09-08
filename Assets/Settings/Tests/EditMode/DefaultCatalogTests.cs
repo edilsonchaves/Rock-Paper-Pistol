@@ -43,6 +43,13 @@ namespace RockPaperPistol.Tests
             Assert.AreEqual(EnemyBehavior.Defensive, DefaultCatalog.Enemies[1].Behavior);
             Assert.AreEqual("Pirata", DefaultCatalog.Enemies[2].Name);
             Assert.AreEqual(EnemyBehavior.Aggressive, DefaultCatalog.Enemies[2].Behavior);
+            Assert.AreEqual(Suit.Rock, DefaultCatalog.Enemies[0].PreferredSuit);
+            Assert.AreEqual(Suit.Paper, DefaultCatalog.Enemies[1].PreferredSuit);
+            Assert.AreEqual(Suit.Scissors, DefaultCatalog.Enemies[2].PreferredSuit);
+            Assert.AreEqual(PistolId.Estatua, DefaultCatalog.Enemies[0].Pistol.Value.Pistol);
+            Assert.AreEqual(PistolId.Mumia, DefaultCatalog.Enemies[1].Pistol.Value.Pistol);
+            Assert.AreEqual(PistolId.Pirata, DefaultCatalog.Enemies[2].Pistol.Value.Pistol);
+            Assert.AreEqual(3, DefaultCatalog.Enemies[1].PistolAvailableFromTurn);
         }
     }
 }

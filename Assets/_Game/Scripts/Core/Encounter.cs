@@ -86,7 +86,7 @@ namespace RockPaperPistol.Core
                 throw new InvalidOperationException("O encontro já terminou.");
             }
 
-            RoundResolution resolution = CardComparer.Compare(player, enemy, _stake);
+            RoundResolution resolution = CardComparer.Compare(player, enemy, _stake, RoundsPlayed + 1);
 
             if (resolution.Outcome == RoundOutcome.Draw)
             {

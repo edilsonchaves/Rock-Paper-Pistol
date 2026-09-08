@@ -9,6 +9,9 @@ namespace RockPaperPistol.Data
     {
         public string DisplayName;
         public EnemyBehavior Behavior = EnemyBehavior.Defensive;
+        public Suit PreferredSuit = Suit.Rock;
+        public PistolId Pistol = PistolId.None;
+        public int PistolAvailableFromTurn = 1;
         public CardData[] Sequence = new CardData[DefaultCatalog.BaseDeckSize];
 
         public IReadOnlyList<Card> ToSequence()
@@ -24,10 +27,14 @@ namespace RockPaperPistol.Data
 
         public NamedEnemy ToNamedEnemy()
         {
+            Card? pistol = Pistol == PistolId.None ? (Card?)null : Card.CreatePistol(Pistol);
             return new NamedEnemy(
                 string.IsNullOrEmpty(DisplayName) ? name : DisplayName,
                 ToSequence(),
-                Behavior);
+                Behavior,
+                PreferredSuit,
+                pistol,
+                PistolAvailableFromTurn < 1 ? 1 : PistolAvailableFromTurn);
         }
     }
 }
