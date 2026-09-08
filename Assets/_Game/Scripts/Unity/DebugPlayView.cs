@@ -24,26 +24,17 @@ namespace RockPaperPistol.Unity
             }
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void BootstrapEmptyScene()
+        private void OnGUI()
         {
 #if UNITY_2023_1_OR_NEWER
-            if (FindFirstObjectByType<DebugPlayView>() != null)
+            if (FindFirstObjectByType<Battle.BattleBoard>() != null)
 #else
-            if (FindObjectOfType<DebugPlayView>() != null)
+            if (FindObjectOfType<Battle.BattleBoard>() != null)
 #endif
             {
                 return;
             }
 
-            GameObject root = new GameObject("RockPaperPistol");
-            root.AddComponent<GameSessionDriver>();
-            root.AddComponent<AudioManager>();
-            root.AddComponent<DebugPlayView>();
-        }
-
-        private void OnGUI()
-        {
             if (_driver == null)
             {
                 return;
