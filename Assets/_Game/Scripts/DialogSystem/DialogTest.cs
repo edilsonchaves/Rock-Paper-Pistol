@@ -1,5 +1,6 @@
 using System.Collections;
 using RockPaperPistol.Data;
+using RockPaperPistol.Utils;
 using UnityEngine;
 
 namespace RockPaperPistol.DialogSystem
@@ -7,12 +8,21 @@ namespace RockPaperPistol.DialogSystem
     public class DialogTest : MonoBehaviour
 {
     [SerializeField] private DialogData _test;
-    [SerializeField] private DialogSystem _system;
     private bool _isShowingDialogTest = false;
+
     public void Start()
     {
         StartCoroutine(ShowDialog());
-        _system.CallbackFinishWriteDialogPart += NextDialog;
+    }
+
+    void OnEnable()
+    {
+        GameEvents.Dialog.CallbackFinishWriteDialogPart += NextDialog;
+    }
+
+    void OnDisable()
+    {
+        GameEvents.Dialog.CallbackFinishWriteDialogPart -= NextDialog;
     }
 
     IEnumerator ShowDialog()
@@ -23,11 +33,14 @@ namespace RockPaperPistol.DialogSystem
         while (currentDialog != null)
         {
             _isShowingDialogTest = true;
-            _system.ShowDialogUI(currentDialog);
+            GameEvents.Dialog.ShowDialog?.Invoke(currentDialog);
             count++;
             currentDialog = _test.LoadNextSequence(count);
             yield return new WaitUntil(() => !_isShowingDialogTest);
         }
+        yield return new WaitForSeconds(2f);
+
+        GameEvents.Dialog.CloseDialog?.Invoke();
     }
 
     private void NextDialog()
