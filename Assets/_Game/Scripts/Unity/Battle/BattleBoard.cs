@@ -67,7 +67,13 @@ namespace RockPaperPistol.Unity.Battle
             }
 
             StyleCamera();
+            HideBlockingUi();
             BuildStage();
+        }
+
+        private void Start()
+        {
+            BeginPlaytestIfNeeded();
         }
 
         private void Update()
@@ -85,14 +91,7 @@ namespace RockPaperPistol.Unity.Battle
             RunSession session = _driver.Session;
             if (session.Phase == RunPhase.AwaitingDeck)
             {
-                _promptText.gameObject.SetActive(true);
-                _promptText.text = "Clique para começar o playtest";
-                if (Input.GetMouseButtonDown(0))
-                {
-                    _driver.SelectDeck(0);
-                    _turnFaces.Clear();
-                }
-
+                BeginPlaytestIfNeeded();
                 return;
             }
 
@@ -196,7 +195,7 @@ namespace RockPaperPistol.Unity.Battle
                 float t = _hand.Count <= 1 ? 0.5f : i / (float)(_hand.Count - 1);
                 float x = Mathf.Lerp(-6.2f, 6.2f, t);
                 float angle = Mathf.Lerp(12f, -12f, t);
-                _hand[i].transform.localPosition = new Vector3(x, -3.55f, 0f);
+                _hand[i].transform.localPosition = new Vector3(x, -3.2f, 0f);
                 _hand[i].transform.localRotation = Quaternion.Euler(0f, 0f, angle);
                 _hand[i].transform.localScale = Vector3.one * 0.82f;
             }
@@ -279,6 +278,7 @@ namespace RockPaperPistol.Unity.Battle
                 SpriteRenderer renderer = go.AddComponent<SpriteRenderer>();
                 renderer.sprite = PlaceholderArt.CardBack();
                 renderer.sortingOrder = 4;
+                PlaceholderArt.ApplyVisibleMaterial(renderer);
                 _enemyBacks.Add(renderer);
             }
 
@@ -416,7 +416,7 @@ namespace RockPaperPistol.Unity.Battle
 
         private void BuildStage()
         {
-            CreateSprite("Table", PlaceholderArt.Table(), new Vector3(0f, -0.35f, 0f), new Vector3(16.5f, 7.2f, 1f), 0);
+            CreateSprite("Table", PlaceholderArt.Table(), new Vector3(0f, -0.35f, 0f), new Vector3(3.6f, 3.2f, 1f), 0);
             CreateSprite("PlayerSlot", PlaceholderArt.Slot(), PlayerSlot, Vector3.one, 1);
             CreateSprite("EnemySlot", PlaceholderArt.Slot(), EnemySlot, Vector3.one * 0.82f, 1);
             CreateSprite("Opponent", PlaceholderArt.Opponent(), OpponentPos, Vector3.one * 1.15f, 3);
@@ -524,7 +524,34 @@ namespace RockPaperPistol.Unity.Battle
             SpriteRenderer renderer = go.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
             renderer.sortingOrder = order;
+            PlaceholderArt.ApplyVisibleMaterial(renderer);
             return renderer;
+        }
+
+        private void BeginPlaytestIfNeeded()
+        {
+            if (_driver == null || _driver.Session.Phase != RunPhase.AwaitingDeck)
+            {
+                return;
+            }
+
+            _promptText.gameObject.SetActive(false);
+            _driver.SelectDeck(0);
+            _turnFaces.Clear();
+            _lastHandCount = -1;
+            _lastEnemyCount = -1;
+            _lastRounds = -1;
+            _lastStep = (ResolutionStep)(-1);
+            RefreshIfNeeded(_driver.Session);
+        }
+
+        private static void HideBlockingUi()
+        {
+            GameObject dialog = GameObject.Find("DialogSystem");
+            if (dialog != null)
+            {
+                dialog.SetActive(false);
+            }
         }
 
         private static TextMesh CreateText(string name, Vector3 position, int size, TextAnchor anchor)

@@ -71,6 +71,7 @@ namespace RockPaperPistol.Unity.Battle
             child.transform.SetParent(transform, false);
             SpriteRenderer renderer = child.AddComponent<SpriteRenderer>();
             renderer.sortingOrder = order;
+            PlaceholderArt.ApplyVisibleMaterial(renderer);
             return renderer;
         }
     }
