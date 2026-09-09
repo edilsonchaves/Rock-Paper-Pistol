@@ -254,7 +254,56 @@ namespace RockPaperPistol.Unity.Battle
             Fill(tex, Color.clear);
             paint(tex);
             tex.Apply();
-            return Sprite.Create(tex, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 100f);
+            return Sprite.Create(
+                tex,
+                new Rect(0, 0, width, height),
+                new Vector2(0.5f, 0.5f),
+                100f,
+                0,
+                SpriteMeshType.FullRect);
+        }
+
+        public static void ApplyVisibleMaterial(SpriteRenderer renderer)
+        {
+            if (renderer == null)
+            {
+                return;
+            }
+
+            Material material = VisibleSpriteMaterial();
+            if (material != null)
+            {
+                renderer.sharedMaterial = material;
+            }
+        }
+
+        private static Material _visibleSpriteMaterial;
+
+        private static Material VisibleSpriteMaterial()
+        {
+            if (_visibleSpriteMaterial != null)
+            {
+                return _visibleSpriteMaterial;
+            }
+
+            Shader shader = Shader.Find("Universal Render Pipeline/2D/Sprite-Unlit-Default");
+            if (shader == null)
+            {
+                shader = Shader.Find("Universal Render Pipeline/2D/Sprite-Lit-Default");
+            }
+
+            if (shader == null)
+            {
+                shader = Shader.Find("Sprites/Default");
+            }
+
+            if (shader == null)
+            {
+                return null;
+            }
+
+            _visibleSpriteMaterial = new Material(shader);
+            return _visibleSpriteMaterial;
         }
 
         private static void Fill(Texture2D tex, Color color)
