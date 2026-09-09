@@ -18,53 +18,52 @@ namespace RockPaperPistol.Unity
 
     public sealed class GameSessionDriver : MonoBehaviour
     {
-        public const float DefaultRevealDelay = 0.6f;
+        public const float DefaultSelectedDelay = 0.6f;
+        public const float DefaultRevealedDelay = 0.6f;
+        public const float DefaultRevealDelay = DefaultRevealedDelay;
         public const float DefaultSuitCheckDelay = 0.6f;
         public const float DefaultValueCheckDelay = 0.6f;
         public const float DefaultResultDelay = 0.8f;
         public const float DefaultNextTurnDelay = 0.5f;
+        public const string DefaultTimingAssetPath = "Assets/_Game/Content/BattleTiming.asset";
 
         [SerializeField] private GameContent content;
-        [SerializeField] private float revealDelay = DefaultRevealDelay;
-        [SerializeField] private float suitCheckDelay = DefaultSuitCheckDelay;
-        [SerializeField] private float valueCheckDelay = DefaultValueCheckDelay;
-        [SerializeField] private float resultDelay = DefaultResultDelay;
-        [SerializeField] private float nextTurnDelay = DefaultNextTurnDelay;
+        [SerializeField] private BattleTiming timing;
 
         private RunSession _session;
         private IReadOnlyList<NamedDeck> _decks;
         private PlayResult? _lastPlay;
         private Coroutine _resolution;
 
-        public float RevealDelay
+        public BattleTiming Timing
         {
-            get => revealDelay;
-            set => revealDelay = value;
+            get
+            {
+                LoadTimingIfNeeded();
+                return timing;
+            }
+            set => timing = value;
         }
 
-        public float SuitCheckDelay
-        {
-            get => suitCheckDelay;
-            set => suitCheckDelay = value;
-        }
+        public float SelectedDelay =>
+            ResolveDelay(Timing != null ? Timing.SelectedDelay : DefaultSelectedDelay);
 
-        public float ValueCheckDelay
-        {
-            get => valueCheckDelay;
-            set => valueCheckDelay = value;
-        }
+        public float RevealedDelay =>
+            ResolveDelay(Timing != null ? Timing.RevealedDelay : DefaultRevealedDelay);
 
-        public float ResultDelay
-        {
-            get => resultDelay;
-            set => resultDelay = value;
-        }
+        public float RevealDelay => RevealedDelay;
 
-        public float NextTurnDelay
-        {
-            get => nextTurnDelay;
-            set => nextTurnDelay = value;
-        }
+        public float SuitCheckDelay =>
+            ResolveDelay(Timing != null ? Timing.SuitCheckDelay : DefaultSuitCheckDelay);
+
+        public float ValueCheckDelay =>
+            ResolveDelay(Timing != null ? Timing.ValueCheckDelay : DefaultValueCheckDelay);
+
+        public float ResultDelay =>
+            ResolveDelay(Timing != null ? Timing.ResultDelay : DefaultResultDelay);
+
+        public float NextTurnDelay =>
+            ResolveDelay(Timing != null ? Timing.NextTurnDelay : DefaultNextTurnDelay);
 
         public bool IsResolving { get; private set; }
         public ResolutionStep ResolutionStep { get; private set; }
@@ -169,30 +168,30 @@ namespace RockPaperPistol.Unity
             ResolutionStep = ResolutionStep.Selected;
             GameplayEventBus.Raise(GameplayEvent.CardSelected);
 
-            yield return new WaitForSeconds(revealDelay);
+            yield return new WaitForSeconds(SelectedDelay);
 
             PlayResult result = PlayFromHand(handIndex);
             ResolutionStep = ResolutionStep.Revealed;
             GameplayEventBus.Raise(GameplayEvent.EnemyCardSelected);
             GameplayEventBus.Raise(GameplayEvent.CardsRevealed);
 
-            yield return new WaitForSeconds(revealDelay);
+            yield return new WaitForSeconds(RevealedDelay);
 
             ResolutionStep = ResolutionStep.SuitChecked;
             GameplayEventBus.Raise(GameplayEvent.SuitChecked);
 
-            yield return new WaitForSeconds(suitCheckDelay);
+            yield return new WaitForSeconds(SuitCheckDelay);
 
             ResolutionStep = ResolutionStep.ValueChecked;
             GameplayEventBus.Raise(GameplayEvent.ValueChecked);
 
-            yield return new WaitForSeconds(valueCheckDelay);
+            yield return new WaitForSeconds(ValueCheckDelay);
 
             ResolutionStep = ResolutionStep.ResultShown;
             RaiseOutcomeEvents(result);
             GameplayEventBus.Raise(GameplayEvent.CardDiscarded);
 
-            yield return new WaitForSeconds(resultDelay);
+            yield return new WaitForSeconds(ResultDelay);
 
             GameplayEventBus.Raise(GameplayEvent.TurnEnd);
 
@@ -203,7 +202,7 @@ namespace RockPaperPistol.Unity
             }
             else
             {
-                yield return new WaitForSeconds(nextTurnDelay);
+                yield return new WaitForSeconds(NextTurnDelay);
                 GameplayEventBus.Raise(GameplayEvent.TurnStart);
             }
 
@@ -249,6 +248,24 @@ namespace RockPaperPistol.Unity
                     "Assets/_Game/Content/GameContent.asset");
             }
 #endif
+            LoadTimingIfNeeded();
+        }
+
+        private void LoadTimingIfNeeded()
+        {
+            if (timing != null)
+            {
+                return;
+            }
+
+#if UNITY_EDITOR
+            timing = UnityEditor.AssetDatabase.LoadAssetAtPath<BattleTiming>(DefaultTimingAssetPath);
+#endif
+        }
+
+        private static float ResolveDelay(float seconds)
+        {
+            return Mathf.Max(0f, seconds);
         }
     }
 }
