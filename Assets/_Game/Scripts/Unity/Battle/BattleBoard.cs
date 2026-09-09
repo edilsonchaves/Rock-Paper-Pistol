@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using RockPaperPistol.Core;
+using TMPro;
 using UnityEngine;
 
 namespace RockPaperPistol.Unity.Battle
@@ -21,11 +22,11 @@ namespace RockPaperPistol.Unity.Battle
         private CardView _playerSlotCard;
         private CardView _enemySlotCard;
         private SpriteRenderer _bubble;
-        private TextMesh _turnText;
-        private TextMesh _scoreText;
-        private TextMesh _bubbleText;
-        private TextMesh _promptText;
-        private TextMesh _pauseText;
+        private TextMeshPro _turnText;
+        private TextMeshPro _scoreText;
+        private TextMeshPro _bubbleText;
+        private TextMeshPro _promptText;
+        private TextMeshPro _pauseText;
         private CardView _hover;
         private ResolutionStep _lastStep = (ResolutionStep)(-1);
         private int _lastHandCount = -1;
@@ -78,7 +79,7 @@ namespace RockPaperPistol.Unity.Battle
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape) || ClickedWorld(new Vector3(7.2f, 4.2f, 0f), 1.3f, 0.55f))
+            if (GameInput.EscapePressed || ClickedWorld(new Vector3(7.2f, 4.2f, 0f), 1.3f, 0.55f))
             {
                 TogglePause();
             }
@@ -101,7 +102,7 @@ namespace RockPaperPistol.Unity.Battle
                 _promptText.text = session.Phase == RunPhase.Victory
                     ? "Vitória. Clique para nova run."
                     : "Derrota. Clique para nova run.";
-                if (Input.GetMouseButtonDown(0))
+                if (GameInput.LeftClickPressed)
                 {
                     _driver.Restart();
                     _turnFaces.Clear();
@@ -365,7 +366,7 @@ namespace RockPaperPistol.Unity.Battle
                 }
             }
 
-            if (hit == null || !Input.GetMouseButtonDown(0) || _driver.IsResolving)
+            if (hit == null || !GameInput.LeftClickPressed || _driver.IsResolving)
             {
                 return;
             }
@@ -382,7 +383,7 @@ namespace RockPaperPistol.Unity.Battle
                 return null;
             }
 
-            Vector3 mouse = Input.mousePosition;
+            Vector3 mouse = GameInput.MouseScreenPosition;
             mouse.z = Mathf.Abs(camera.transform.position.z);
             Vector3 world = camera.ScreenToWorldPoint(mouse);
             RaycastHit2D hit = Physics2D.Raycast(world, Vector2.zero);
@@ -396,12 +397,12 @@ namespace RockPaperPistol.Unity.Battle
 
         private bool ClickedWorld(Vector3 center, float w, float h)
         {
-            if (!Input.GetMouseButtonDown(0) || Camera.main == null)
+            if (!GameInput.LeftClickPressed || Camera.main == null)
             {
                 return false;
             }
 
-            Vector3 mouse = Input.mousePosition;
+            Vector3 mouse = GameInput.MouseScreenPosition;
             mouse.z = Mathf.Abs(Camera.main.transform.position.z);
             Vector3 world = Camera.main.ScreenToWorldPoint(mouse);
             return Mathf.Abs(world.x - center.x) <= w && Mathf.Abs(world.y - center.y) <= h;
@@ -440,13 +441,14 @@ namespace RockPaperPistol.Unity.Battle
                 _circles.Add(circle);
             }
 
-            _turnText = CreateText("TurnText", new Vector3(-6.4f, 4.65f, 0f), 42, TextAnchor.MiddleLeft);
+            _turnText = CreateText("TurnText", new Vector3(-6.4f, 4.65f, 0f), 5.2f, TextAlignmentOptions.MidlineLeft);
             _turnText.text = "Turno 1/7";
-            _scoreText = CreateText("ScoreText", new Vector3(-6.4f, 3.72f, 0f), 28, TextAnchor.MiddleLeft);
-            _bubbleText = CreateText("BubbleText", new Vector3(3.4f, 3.15f, 0f), 28, TextAnchor.MiddleCenter);
+            _scoreText = CreateText("ScoreText", new Vector3(-6.4f, 3.72f, 0f), 3.6f, TextAlignmentOptions.MidlineLeft);
+            _bubbleText = CreateText("BubbleText", new Vector3(3.4f, 3.15f, 0f), 3.4f, TextAlignmentOptions.Center);
+            _bubbleText.color = Color.black;
             _bubbleText.gameObject.SetActive(false);
-            _promptText = CreateText("Prompt", new Vector3(0f, 0.2f, 0f), 48, TextAnchor.MiddleCenter);
-            _pauseText = CreateText("Pause", new Vector3(7.2f, 4.2f, 0f), 32, TextAnchor.MiddleCenter);
+            _promptText = CreateText("Prompt", new Vector3(0f, 0.2f, 0f), 5.5f, TextAlignmentOptions.Center);
+            _pauseText = CreateText("Pause", new Vector3(7.2f, 4.2f, 0f), 4f, TextAlignmentOptions.Center);
             _pauseText.text = "Pause";
         }
 
@@ -554,35 +556,21 @@ namespace RockPaperPistol.Unity.Battle
             }
         }
 
-        private static TextMesh CreateText(string name, Vector3 position, int size, TextAnchor anchor)
+        private TextMeshPro CreateText(string name, Vector3 position, float fontSize, TextAlignmentOptions align)
         {
             GameObject go = new GameObject(name);
+            go.transform.SetParent(transform, false);
             go.transform.position = position;
-            TextMesh text = go.AddComponent<TextMesh>();
-            Font font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-            if (font == null)
-            {
-                font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            }
-
-            if (font != null)
-            {
-                text.font = font;
-            }
-
-            text.fontSize = size;
-            text.characterSize = 0.08f;
-            text.anchor = anchor;
-            text.alignment = TextAlignment.Center;
-            text.color = Color.white;
-            text.fontStyle = FontStyle.Bold;
-            MeshRenderer mesh = go.GetComponent<MeshRenderer>();
-            if (mesh != null)
-            {
-                mesh.sortingOrder = 20;
-            }
-
-            return text;
+            TextMeshPro tmp = go.AddComponent<TextMeshPro>();
+            tmp.fontSize = fontSize;
+            tmp.alignment = align;
+            tmp.color = Color.white;
+            tmp.fontStyle = FontStyles.Bold;
+            tmp.enableWordWrapping = false;
+            tmp.overflowMode = TextOverflowModes.Overflow;
+            tmp.rectTransform.sizeDelta = new Vector2(8f, 1.2f);
+            tmp.sortingOrder = 20;
+            return tmp;
         }
 
         private static int EncounterTurnBeforePlay(RunSession session)

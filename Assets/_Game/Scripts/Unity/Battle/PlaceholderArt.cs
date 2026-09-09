@@ -33,7 +33,7 @@ namespace RockPaperPistol.Unity.Battle
             });
         }
 
-        public static Sprite CardFront(Card card, Suit displaySuit, int displayValue, bool plusOne)
+        public static Sprite CardFront(Card card, Suit displaySuit)
         {
             return Make(160, 220, tex =>
             {
@@ -47,17 +47,10 @@ namespace RockPaperPistol.Unity.Battle
                 {
                     DrawDiamond(tex, 80, 108, 46, new Color(0.75f, 0.58f, 0.28f));
                     DrawGun(tex, 80, 108, Color.black);
-                    DrawLabel(tex, 18, 190, "REVOLVER", Color.black);
                 }
                 else
                 {
                     DrawSuitIcon(tex, displaySuit, 80, 100);
-                }
-
-                DrawValue(tex, 16, 176, displayValue);
-                if (plusOne)
-                {
-                    DrawPlusOne(tex, 52, 188);
                 }
             });
         }
@@ -185,63 +178,6 @@ namespace RockPaperPistol.Unity.Battle
         {
             FillRect(tex, cx - 28, cy, 50, 10, color);
             FillRect(tex, cx + 10, cy - 18, 10, 20, color);
-        }
-
-        private static void DrawValue(Texture2D tex, int x, int y, int value)
-        {
-            DrawLabel(tex, x, y, value.ToString(), Color.black);
-        }
-
-        private static void DrawPlusOne(Texture2D tex, int x, int y)
-        {
-            DrawLabel(tex, x, y, "+1", new Color(0.82f, 0.12f, 0.12f));
-        }
-
-        private static void DrawLabel(Texture2D tex, int x, int y, string text, Color color)
-        {
-            int cursor = x;
-            for (int i = 0; i < text.Length; i++)
-            {
-                DrawGlyph(tex, cursor, y, text[i], color);
-                cursor += 11;
-            }
-        }
-
-        private static void DrawGlyph(Texture2D tex, int x, int y, char c, Color color)
-        {
-            switch (c)
-            {
-                case '1':
-                    DrawLine(tex, x + 5, y, x + 5, y + 14, color, 2);
-                    break;
-                case '2':
-                    DrawLine(tex, x, y + 14, x + 8, y + 14, color, 2);
-                    DrawLine(tex, x + 8, y + 14, x + 8, y + 7, color, 2);
-                    DrawLine(tex, x, y + 7, x + 8, y + 7, color, 2);
-                    DrawLine(tex, x, y + 7, x, y, color, 2);
-                    DrawLine(tex, x, y, x + 8, y, color, 2);
-                    break;
-                case '3':
-                    DrawLine(tex, x, y + 14, x + 8, y + 14, color, 2);
-                    DrawLine(tex, x + 8, y + 14, x + 8, y, color, 2);
-                    DrawLine(tex, x, y + 7, x + 8, y + 7, color, 2);
-                    DrawLine(tex, x, y, x + 8, y, color, 2);
-                    break;
-                case '+':
-                    DrawLine(tex, x + 4, y, x + 4, y + 10, color, 2);
-                    DrawLine(tex, x, y + 5, x + 8, y + 5, color, 2);
-                    break;
-                case 'R':
-                case 'E':
-                case 'V':
-                case 'O':
-                case 'L':
-                    FillRect(tex, x, y, 8, 12, color);
-                    break;
-                default:
-                    FillRect(tex, x, y + 4, 7, 7, color);
-                    break;
-            }
         }
 
         private static Sprite Make(int width, int height, System.Action<Texture2D> paint)
