@@ -49,6 +49,7 @@ namespace RockPaperPistol.Unity
             };
 
             GUILayout.BeginArea(new Rect(16, 16, Screen.width - 32, Screen.height - 32), box);
+            _scroll.y -= GameInput.MouseScrollY;
             _scroll = GUILayout.BeginScrollView(_scroll);
 
             RunSession session = _driver.Session;
@@ -86,7 +87,7 @@ namespace RockPaperPistol.Unity
             for (int i = 0; i < decks.Count; i++)
             {
                 NamedDeck deck = decks[i];
-                if (GUILayout.Button($"{deck.Name}\n{FormatCards(deck.Cards)}", GUILayout.Height(56)))
+                if (GameInput.ImguiButton($"{deck.Name}\n{FormatCards(deck.Cards)}", GUILayout.Height(56)))
                 {
                     _driver.SelectDeck(i);
                 }
@@ -123,7 +124,7 @@ namespace RockPaperPistol.Unity
                 for (int i = 0; i < session.Deck.Hand.Count; i++)
                 {
                     Card card = session.Deck.Hand[i];
-                    if (GUILayout.Button(card.ToString(), GUILayout.Height(36)))
+                    if (GameInput.ImguiButton(card.ToString(), GUILayout.Height(36)))
                     {
                         _driver.PlayFromHandAnimated(i);
                     }
@@ -218,7 +219,7 @@ namespace RockPaperPistol.Unity
 
             DrawAudioHook();
             GUILayout.Space(8);
-            if (GUILayout.Button("Nova run — baralho base de novo", GUILayout.Height(40)))
+            if (GameInput.ImguiButton("Nova run — baralho base de novo", GUILayout.Height(40)))
             {
                 _driver.Restart();
             }

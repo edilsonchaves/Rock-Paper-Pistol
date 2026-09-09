@@ -3,7 +3,9 @@
     "rootNamespace": "RockPaperPistol.Unity",
     "references": [
         "RockPaperPistol.Core",
-        "RockPaperPistol.Data"
+        "RockPaperPistol.Data",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
