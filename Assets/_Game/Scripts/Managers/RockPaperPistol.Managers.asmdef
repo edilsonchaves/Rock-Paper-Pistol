@@ -1,0 +1,16 @@
+{
+    "name": "RockPaperPistol.Managers",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6b151b9c2f86c5f4695034e165297c57"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
