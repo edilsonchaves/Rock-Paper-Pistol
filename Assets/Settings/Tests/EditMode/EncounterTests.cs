@@ -87,29 +87,33 @@ namespace RockPaperPistol.Tests
         [Test]
         public void PlayerUsingCard_DoesNotRemoveEnemyCopy()
         {
-            RunSession run = new RunSession(ThreeWithBaseDeck());
+            RunSession run = new RunSession(DefaultCatalog.Enemies);
             run.SelectDeck(DefaultCatalog.BaseDeck, new System.Random(1));
 
-            Card pedra3 = new Card(Suit.Rock, 3);
-            int playerIndex = IndexOf(run.Deck.Hand, pedra3);
-            Assert.GreaterOrEqual(playerIndex, 0);
-            Assert.IsTrue(ContainsCard(run.EnemyDeck.Hand, pedra3));
+            Card played = FirstBasic(run.Deck.Hand);
+            int playerOwnedBefore = CountOwned(run.Deck, played);
+            int enemyOwnedBefore = CountOwned(run.EnemyDeck, played);
 
-            run.PlayFromHand(playerIndex);
+            run.PlayFromHand(IndexOf(run.Deck.Hand, played));
 
-            Assert.IsFalse(ContainsCard(run.Deck.Hand, pedra3));
-            Assert.IsTrue(ContainsCard(run.Deck.Discard, pedra3));
-            Assert.IsTrue(ContainsCard(run.EnemyDeck.Hand, pedra3));
+            Assert.AreEqual(playerOwnedBefore, CountOwned(run.Deck, played));
+            Assert.AreEqual(enemyOwnedBefore, CountOwned(run.EnemyDeck, played));
+            Assert.IsFalse(ContainsCard(run.Deck.Hand, played));
+            Assert.IsTrue(ContainsCard(run.Deck.Discard, played));
         }
 
         [Test]
-        public void RunSession_StartsWithNineAvailableCardsEach()
+        public void RunSession_StartsWithEightBasicsAndOnePistolEach()
         {
-            RunSession run = new RunSession(ThreeWithBaseDeck());
+            RunSession run = new RunSession(DefaultCatalog.Enemies);
             run.SelectDeck(DefaultCatalog.BaseDeck, new System.Random(1));
 
             Assert.AreEqual(9, run.Deck.HandCount);
             Assert.AreEqual(9, run.EnemyDeck.HandCount);
+            Assert.AreEqual(1, run.Deck.Excluded.Count);
+            Assert.AreEqual(1, run.EnemyDeck.Excluded.Count);
+            Assert.IsTrue(ContainsCard(run.Deck.Hand, DefaultCatalog.PlayerPistol));
+            Assert.IsTrue(ContainsCard(run.EnemyDeck.Hand, Card.CreatePistol(PistolId.Estatua)));
             Assert.AreEqual(Encounter.DefaultMaxTurns, run.MaxTurns);
             CollectionAssert.AreEqual(DefaultCatalog.BaseDeck, run.Deck.Composition);
             CollectionAssert.AreEqual(DefaultCatalog.BaseDeck, run.EnemyDeck.Composition);
@@ -120,9 +124,9 @@ namespace RockPaperPistol.Tests
         {
             IReadOnlyList<NamedEnemy> easyEnemies = new[]
             {
-                new NamedEnemy("A", NineWeak()),
-                new NamedEnemy("B", NineWeak()),
-                new NamedEnemy("C", NineWeak())
+                Easy("A"),
+                Easy("B"),
+                Easy("C")
             };
 
             RunSession run = new RunSession(easyEnemies);
@@ -133,9 +137,9 @@ namespace RockPaperPistol.Tests
             Assert.AreEqual(1, run.EnemyIndex);
             Assert.AreEqual(1, run.EnemiesDefeated);
             Assert.AreEqual(0, run.Deck.DiscardCount);
-            Assert.AreEqual(9, run.Deck.HandCount + run.Deck.DrawCount);
             Assert.AreEqual(9, run.Deck.HandCount);
             Assert.AreEqual(9, run.EnemyDeck.HandCount);
+            Assert.AreEqual(1, run.Deck.Excluded.Count);
         }
 
         [Test]
@@ -161,9 +165,9 @@ namespace RockPaperPistol.Tests
         {
             IReadOnlyList<NamedEnemy> easyEnemies = new[]
             {
-                new NamedEnemy("A", NineWeak()),
-                new NamedEnemy("B", NineWeak()),
-                new NamedEnemy("C", NineWeak())
+                Easy("A"),
+                Easy("B"),
+                Easy("C")
             };
 
             RunSession run = new RunSession(easyEnemies);
@@ -176,14 +180,50 @@ namespace RockPaperPistol.Tests
             Assert.AreEqual(3, run.EnemiesDefeated);
         }
 
-        private static IReadOnlyList<NamedEnemy> ThreeWithBaseDeck()
+        private static NamedEnemy Easy(string name)
         {
-            return new[]
+            return new NamedEnemy(
+                name,
+                NineWeak(),
+                EnemyBehavior.Defensive,
+                Suit.Rock,
+                Card.CreatePistol(PistolId.Estatua));
+        }
+
+        private static Card FirstBasic(IReadOnlyList<Card> cards)
+        {
+            for (int i = 0; i < cards.Count; i++)
             {
-                new NamedEnemy("A", DefaultCatalog.BaseDeck),
-                new NamedEnemy("B", DefaultCatalog.BaseDeck),
-                new NamedEnemy("C", DefaultCatalog.BaseDeck)
-            };
+                if (!cards[i].IsPistol)
+                {
+                    return cards[i];
+                }
+            }
+
+            Assert.Fail("Não havia carta básica na mão.");
+            return default;
+        }
+
+        private static int CountOwned(DeckRuntime deck, Card target)
+        {
+            return CountCard(deck.Hand, target)
+                   + CountCard(deck.Discard, target)
+                   + CountCard(deck.Excluded, target)
+                   + CountCard(deck.DrawPile, target);
+        }
+
+        private static int CountCard(IReadOnlyList<Card> cards, Card target)
+        {
+            int count = 0;
+            for (int i = 0; i < cards.Count; i++)
+            {
+                if (cards[i].Equals(target))
+                {
+                    count += 1;
+                }
+            }
+
+            return count;
         }
 
         private static IReadOnlyList<Card> NineStrong()

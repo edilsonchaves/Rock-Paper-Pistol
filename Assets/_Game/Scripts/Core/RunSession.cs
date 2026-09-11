@@ -45,6 +45,7 @@ namespace RockPaperPistol.Core
         private readonly DeckRuntime _deck = new DeckRuntime();
         private readonly DeckRuntime _enemyDeck = new DeckRuntime();
         private readonly int _maxTurns;
+        private Random _rng = new Random();
 
         public RunSession(IReadOnlyList<NamedEnemy> enemies, int maxTurns = Encounter.DefaultMaxTurns)
         {
@@ -105,7 +106,9 @@ namespace RockPaperPistol.Core
 
             if (rng != null)
             {
+                _rng = rng;
                 _deck.SetRandom(rng);
+                _enemyDeck.SetRandom(rng);
             }
 
             _deck.ResetFrom(composition);
@@ -122,7 +125,7 @@ namespace RockPaperPistol.Core
             }
 
             Card played = _deck.Play(handIndex);
-            Card enemyPlayed = _enemyDeck.Play(0);
+            Card enemyPlayed = _enemyDeck.Play(ChooseEnemyHandIndex());
             EncounterRoundResult round = CurrentEncounter.PlayRound(played, enemyPlayed);
 
             if (!CurrentEncounter.IsFinished)
@@ -157,11 +160,24 @@ namespace RockPaperPistol.Core
 
         private void StartCurrentEncounter()
         {
-            _deck.PrepareEncounter(DeckRuntime.DefaultHandSize);
+            _deck.PrepareMatchHand(DefaultCatalog.PlayerPistol);
             _enemyDeck.ResetFrom(_enemies[EnemyIndex].Sequence);
-            _enemyDeck.DrawUpTo(DeckRuntime.DefaultHandSize);
+            _enemyDeck.PrepareMatchHand(_enemies[EnemyIndex].Pistol);
             CurrentEncounter = new Encounter(_maxTurns);
             Phase = RunPhase.InEncounter;
+        }
+
+        private int ChooseEnemyHandIndex()
+        {
+            NamedEnemy enemy = CurrentEnemy;
+            int turn = CurrentEncounter != null ? CurrentEncounter.RoundsPlayed + 1 : 1;
+            return EnemyCardPicker.ChooseHandIndex(
+                _enemyDeck.Hand,
+                enemy.PreferredSuit,
+                turn,
+                _maxTurns,
+                enemy.PistolAvailableFromTurn,
+                _rng);
         }
     }
 }

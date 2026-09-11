@@ -6,17 +6,20 @@ namespace RockPaperPistol.Core
     public sealed class DeckRuntime
     {
         public const int DefaultHandSize = 9;
+        public const int BasicsDrawnPerEncounter = 8;
 
         private readonly List<Card> _drawPile = new List<Card>();
         private readonly List<Card> _hand = new List<Card>();
         private readonly List<Card> _discard = new List<Card>();
         private readonly List<Card> _composition = new List<Card>();
+        private readonly List<Card> _excluded = new List<Card>();
         private Random _rng = new Random();
 
         public IReadOnlyList<Card> DrawPile => _drawPile;
         public IReadOnlyList<Card> Hand => _hand;
         public IReadOnlyList<Card> Discard => _discard;
         public IReadOnlyList<Card> Composition => _composition;
+        public IReadOnlyList<Card> Excluded => _excluded;
 
         public int HandCount => _hand.Count;
         public int DrawCount => _drawPile.Count;
@@ -42,6 +45,7 @@ namespace RockPaperPistol.Core
             _drawPile.AddRange(_composition);
             _hand.Clear();
             _discard.Clear();
+            _excluded.Clear();
         }
 
         public void SetRandom(Random rng)
@@ -93,6 +97,30 @@ namespace RockPaperPistol.Core
             ResetFrom(_composition);
             Shuffle();
             DrawUpTo(handSize);
+        }
+
+        public void PrepareMatchHand(Card? pistol, int basicCount = BasicsDrawnPerEncounter)
+        {
+            if (basicCount < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(basicCount));
+            }
+
+            ResetFrom(_composition);
+            Shuffle();
+            DrawUpTo(basicCount);
+
+            while (_drawPile.Count > 0)
+            {
+                int last = _drawPile.Count - 1;
+                _excluded.Add(_drawPile[last]);
+                _drawPile.RemoveAt(last);
+            }
+
+            if (pistol.HasValue)
+            {
+                _hand.Add(pistol.Value);
+            }
         }
     }
 }
