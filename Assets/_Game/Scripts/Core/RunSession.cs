@@ -44,10 +44,14 @@ namespace RockPaperPistol.Core
         private readonly NamedEnemy[] _enemies;
         private readonly DeckRuntime _deck = new DeckRuntime();
         private readonly DeckRuntime _enemyDeck = new DeckRuntime();
+        private readonly PlayerLoadout _loadout;
         private readonly int _maxTurns;
         private Random _rng = new Random();
 
-        public RunSession(IReadOnlyList<NamedEnemy> enemies, int maxTurns = Encounter.DefaultMaxTurns)
+        public RunSession(
+            IReadOnlyList<NamedEnemy> enemies,
+            int maxTurns = Encounter.DefaultMaxTurns,
+            PlayerLoadout loadout = null)
         {
             if (enemies == null)
             {
@@ -73,6 +77,7 @@ namespace RockPaperPistol.Core
             }
 
             _maxTurns = maxTurns;
+            _loadout = loadout ?? PlayerLoadout.Default;
             Phase = RunPhase.AwaitingDeck;
         }
 
@@ -96,6 +101,8 @@ namespace RockPaperPistol.Core
         public string CurrentEnemyName => CurrentEnemy.Name;
 
         public IReadOnlyList<NamedEnemy> Enemies => _enemies;
+
+        public PlayerLoadout Loadout => _loadout;
 
         public void SelectDeck(IReadOnlyList<Card> composition, Random rng = null)
         {
@@ -160,7 +167,7 @@ namespace RockPaperPistol.Core
 
         private void StartCurrentEncounter()
         {
-            _deck.PrepareMatchHand(DefaultCatalog.PlayerPistol);
+            _deck.PrepareMatchHand(_loadout.Pistol);
             _enemyDeck.ResetFrom(_enemies[EnemyIndex].Sequence);
             _enemyDeck.PrepareMatchHand(_enemies[EnemyIndex].Pistol);
             CurrentEncounter = new Encounter(_maxTurns);

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using RockPaperPistol.Core;
+using RockPaperPistol.Utils;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace RockPaperPistol.Unity.Battle
 {
@@ -44,6 +46,11 @@ namespace RockPaperPistol.Unity.Battle
 #else
             if (FindObjectOfType<BattleBoard>() != null)
 #endif
+            {
+                return;
+            }
+
+            if (!GameFlow.IsBattleScene(SceneManager.GetActiveScene().name))
             {
                 return;
             }
@@ -100,15 +107,12 @@ namespace RockPaperPistol.Unity.Battle
             {
                 _promptText.gameObject.SetActive(true);
                 _promptText.text = session.Phase == RunPhase.Victory
-                    ? "Vitória. Clique para nova run."
-                    : "Derrota. Clique para nova run.";
+                    ? "Vitória. Clique para voltar ao menu."
+                    : "Derrota. Clique para voltar ao menu.";
                 if (GameInput.LeftClickPressed)
                 {
-                    _driver.Restart();
-                    _turnFaces.Clear();
-                    ClearTableCards();
-                    _lastStep = (ResolutionStep)(-1);
-                    _lastHandCount = -1;
+                    Time.timeScale = 1f;
+                    GameFlow.GoToMenu();
                 }
 
                 return;

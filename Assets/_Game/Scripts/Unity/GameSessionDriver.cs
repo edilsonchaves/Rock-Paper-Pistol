@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using RockPaperPistol.Core;
 using RockPaperPistol.Data;
+using RockPaperPistol.Utils;
 using UnityEngine;
 
 namespace RockPaperPistol.Unity
@@ -106,7 +107,7 @@ namespace RockPaperPistol.Unity
             LoadContentIfNeeded();
             _decks = content != null ? content.ToDecks() : DefaultCatalog.Decks;
             IReadOnlyList<NamedEnemy> enemies = content != null ? content.ToEnemies() : DefaultCatalog.Enemies;
-            _session = new RunSession(enemies, Encounter.DefaultMaxTurns);
+            _session = new RunSession(enemies, Encounter.DefaultMaxTurns, CurrentLoadout());
         }
 
         public void SelectDeck(int index)
@@ -158,7 +159,7 @@ namespace RockPaperPistol.Unity
             LoadContentIfNeeded();
             IReadOnlyList<NamedEnemy> enemies = content != null ? content.ToEnemies() : DefaultCatalog.Enemies;
             _decks = content != null ? content.ToDecks() : DefaultCatalog.Decks;
-            _session = new RunSession(enemies, Encounter.DefaultMaxTurns);
+            _session = new RunSession(enemies, Encounter.DefaultMaxTurns, CurrentLoadout());
         }
 
         private IEnumerator ResolveRound(int handIndex)
@@ -237,6 +238,11 @@ namespace RockPaperPistol.Unity
 
             IsResolving = false;
             ResolutionStep = ResolutionStep.None;
+        }
+
+        private static PlayerLoadout CurrentLoadout()
+        {
+            return GameFlow.Current != null ? GameFlow.Current.Loadout : PlayerLoadout.Default;
         }
 
         private void LoadContentIfNeeded()

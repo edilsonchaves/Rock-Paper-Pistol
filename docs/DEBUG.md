@@ -2,18 +2,23 @@
 
 Documento para localizar causa de bugs no playtest. Comece pela **sintoma → arquivo**, depois use o catálogo completo.
 
-Cena de teste: `Assets/_Game/Scenes/SampleScene.unity`  
-Play cria em runtime o objeto `RockPaperPistol` (`GameSessionDriver` + `AudioManager` + `BattleBoard`).
+Cenas: `MainMenu` → `WeaponScene` → `SampleScene` (batalha).  
+`GameFlow` (DontDestroyOnLoad) guarda a pistola escolhida.  
+A mesa só nasce em `SampleScene` (`BattleBoard.Bootstrap` ignora menu e seleção).
 
 ---
 
 ## 1. Fluxo de uma jogada
 
 ```
-SampleScene
-  → BattleBoard.Bootstrap (AfterSceneLoad)
-      → GameSessionDriver.SelectDeck(0)
-          → RunSession + DeckRuntime (mão 8 básicas + pistola)
+MainMenu
+  → WeaponScene
+      → GameFlow.SelectPistol (GunMan / Múmia / Pirata / Estátua)
+      → GameFlow.GoToBattle()
+  → SampleScene
+      → BattleBoard.Bootstrap (só nesta cena)
+          → GameSessionDriver usa PlayerLoadout do GameFlow
+          → RunSession + DeckRuntime (mão 8 básicas + pistola escolhida)
       → BattleBoard desenha leque / mesa / HUD
       → clique (GameInput) em CardView
           → GameSessionDriver.PlayFromHandAnimated
@@ -25,6 +30,7 @@ SampleScene
               → etapas Revealed → SuitChecked → ValueChecked → ResultShown
               → GameplayEventBus → AudioManager
               → BattleBoard.RefreshIfNeeded redesenha
+      → Vitória / Derrota → clique → GameFlow.GoToMenu()
 ```
 
 Onde olhar o estado em Play:
@@ -37,6 +43,7 @@ Onde olhar o estado em Play:
 | Placar e turno | `Session.CurrentEncounter` |
 | Último evento de áudio | `AudioManager.LastEvent` |
 | Tempos entre etapas | `Assets/_Game/Content/BattleTiming.asset` |
+| Pistola escolhida no menu | `GameFlow.Current.SelectedPistol` / `Session.Loadout` |
 
 ---
 
@@ -44,6 +51,9 @@ Onde olhar o estado em Play:
 
 | Sintoma | Arquivos | O que checar |
 |---|---|---|
+| Mesa aparece no menu | `BattleBoard.Bootstrap` | Só pode criar `RockPaperPistol` se a cena for `SampleScene` |
+| Menu → batalha sem a pistola escolhida | `WeaponSelectMenu.cs`, `GameFlow.cs`, `PlayerLoadout.cs` | `StartGame` precisa chamar `GameFlow.SelectPistol` antes do `LoadScene` |
+| Vitória/derrota não volta ao menu | `BattleBoard.cs` | Clique no overlay deve chamar `GameFlow.GoToMenu()`, não `Restart()` |
 | Cartas não aparecem | `BattleBoard.cs`, `CardView.cs`, `PlaceholderArt.cs` | `Awake`/`BuildStage` estourando; `HideBlockingUi` não desligou o `DialogSystem`; material URP |
 | Clique / Esc / Pause não respondem | `GameInput.cs`, `BattleBoard.cs`, `DebugPlayView.cs` | Projeto em Input System only; não usar `UnityEngine.Input` |
 | Textos ilegíveis ou “REVOLVER” | `CardView.cs`, `BattleBoard.cs` | Labels TMP; pistola do jogador deve dizer **Pistola** |
@@ -95,6 +105,7 @@ Use estes arquivos quando a regra do jogo estiver errada. Dá para validar com `
 | `Assets/_Game/Scripts/Core/RunSession.cs` | Run inteira: 3 inimigos, fases, `SelectDeck`, `PlayFromHand`. Junta decks + encounter + picker. |
 | `Assets/_Game/Scripts/Core/EnemyCardPicker.cs` | IA: 35% no naipe preferido (pistola conta), 65% em qualquer jogável; último turno força pistola; Múmia trava antes do turno 3. |
 | `Assets/_Game/Scripts/Core/EnemyBehavior.cs` | Rótulo `Defensive` / `Aggressive`. **Não escolhe carta** — a escolha está no `EnemyCardPicker`. |
+| `Assets/_Game/Scripts/Core/PlayerLoadout.cs` | Objeto da pistola do jogador na run. Substitui o uso solto de `DefaultCatalog.PlayerPistol` quando o menu escolhe outra arma. |
 | `Assets/_Game/Scripts/Core/DefaultCatalog.cs` | Fallback se `GameContent` falhar: baralho base, pistola do Pistoleiro, 3 inimigos. |
 | `Assets/_Game/Scripts/Core/GameplayEvent.cs` | Eventos da resolução + `GameplayEventBus`. Áudio e UI só escutam; o Core não toca som. |
 | `Assets/_Game/Scripts/Core/RockPaperPistol.Core.asmdef` | Assembly do núcleo (testável sem Unity). |
@@ -116,7 +127,10 @@ Use estes arquivos quando a regra do jogo estiver errada. Dá para validar com `
 
 | Caminho | Função no debug |
 |---|---|
-| `Assets/_Game/Scripts/Unity/GameSessionDriver.cs` | Ponte Unity ↔ Core. Sobe a run, anima a resolução por etapas, dispara eventos. Se a jogada “não resolve”, a coroutine `ResolveRound` parou ou `IsResolving` ficou true. |
+| `Assets/_Game/Scripts/Utils/GameFlow.cs` | Sessão entre cenas (`DontDestroyOnLoad`). Guarda a pistola e carrega Menu / Weapon / Batalha. |
+| `Assets/_Game/Scripts/UI/MainMenu.cs` | Menu inicial. Start leva a `WeaponScene`. |
+| `Assets/_Game/Scripts/UI/WeaponSelectMenu.cs` | Escolha da pistola. Start grava no `GameFlow` e abre `SampleScene`. |
+| `Assets/_Game/Scripts/Unity/GameSessionDriver.cs` | Ponte Unity ↔ Core. Sobe a run com o `PlayerLoadout` do `GameFlow`, anima a resolução, dispara eventos. Se a jogada “não resolve”, a coroutine `ResolveRound` parou ou `IsResolving` ficou true. |
 | `Assets/_Game/Scripts/Unity/BattleTiming.cs` | Script do SO de tempos. Campos que a equipe edita no `BattleTiming.asset`. |
 | `Assets/_Game/Scripts/Unity/GameInput.cs` | Único lugar de input do playtest (Input System): clique, Esc, scroll, botão IMGUI. |
 | `Assets/_Game/Scripts/Unity/AudioManager.cs` | Ouve o `GameplayEventBus`. Sem clip no Inspector, gera beep. `LastEvent` confirma se o evento chegou. |
@@ -165,7 +179,21 @@ dotnet test tests/RockPaperPistol.Core.Tests/RockPaperPistol.Core.Tests.csproj
 
 ---
 
-## 5. O que não é um ScriptableObject de pistola
+## 5. Orientação a objetos da mecânica
+
+O Core **não** usa herança de cartas (`Pistol : Card`). A comparação fica em `CardComparer` (estático, testável). Isso é de propósito: pistola é dado (`PistolId` + regras), não uma árvore de classes.
+
+O que passou a ser objeto:
+
+- `PlayerLoadout` — pistola do jogador na run
+- `RunSession` — orquestra decks, encontros e loadout
+- `GameFlow` — sessão Unity entre menu, arma e batalha
+
+Não reescreva `CardComparer` para “ficar mais OO” sem os testes de `PistolComparerTests.cs`.
+
+---
+
+## 6. O que não é um ScriptableObject de pistola
 
 Não existe asset “Pistola do Pistoleiro”. A pistola do jogador nasce em `DefaultCatalog.PlayerPistol` → `Card.CreatePistol(PistolId.Pistoleiro)`.
 

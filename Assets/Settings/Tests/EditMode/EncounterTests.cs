@@ -114,9 +114,22 @@ namespace RockPaperPistol.Tests
             Assert.AreEqual(1, run.EnemyDeck.Excluded.Count);
             Assert.IsTrue(ContainsCard(run.Deck.Hand, DefaultCatalog.PlayerPistol));
             Assert.IsTrue(ContainsCard(run.EnemyDeck.Hand, Card.CreatePistol(PistolId.Estatua)));
+            Assert.AreEqual(PistolId.Pistoleiro, run.Loadout.Pistol.Pistol);
             Assert.AreEqual(Encounter.DefaultMaxTurns, run.MaxTurns);
             CollectionAssert.AreEqual(DefaultCatalog.BaseDeck, run.Deck.Composition);
             CollectionAssert.AreEqual(DefaultCatalog.BaseDeck, run.EnemyDeck.Composition);
+        }
+
+        [Test]
+        public void RunSession_UsesChosenPlayerLoadout()
+        {
+            PlayerLoadout loadout = new PlayerLoadout(PistolId.Pirata);
+            RunSession run = new RunSession(DefaultCatalog.Enemies, Encounter.DefaultMaxTurns, loadout);
+            run.SelectDeck(DefaultCatalog.BaseDeck, new System.Random(1));
+
+            Assert.IsTrue(ContainsCard(run.Deck.Hand, Card.CreatePistol(PistolId.Pirata)));
+            Assert.IsFalse(ContainsCard(run.Deck.Hand, DefaultCatalog.PlayerPistol));
+            Assert.AreEqual(PistolId.Pirata, run.Loadout.Pistol.Pistol);
         }
 
         [Test]
