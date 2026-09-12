@@ -32,3 +32,6 @@ MonoBehaviour:
     Value: 2
   - Suit: 2
     Value: 3
+  CardsOficial:
+  - {fileID: 11400000, guid: 4dbd1624c813f32478297fd8e2de1abe, type: 2}
+  - {fileID: 11400000, guid: b8c5dd5b721cbd6458cb6de0485aef3f, type: 2}

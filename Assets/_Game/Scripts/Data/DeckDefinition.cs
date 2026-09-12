@@ -9,7 +9,7 @@ namespace RockPaperPistol.Data
     {
         public string DisplayName;
         public CardData[] Cards = new CardData[9];
-
+        public CardDefinition[] CardsOficial;
         public IReadOnlyList<Card> ToCards()
         {
             Card[] result = new Card[Cards != null ? Cards.Length : 0];
