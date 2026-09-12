@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8c3e91f2d4b47a09e6f1c5d8b3a2470, type: 3}
+  m_Name: GameSounds
+  m_EditorClassIdentifier: RockPaperPistol.Unity::RockPaperPistol.Unity.GameSounds
+  musicVolume: 0.28
+  sfxVolume: 0.85
+  carnival: {fileID: 8300000, guid: fc2d7f8b28a14a1097b0f9b8543fe294, type: 2}
+  cardFlip: {fileID: 8300000, guid: 41ac637a20f744f88dc329b9e645e327, type: 2}
+  deckCards: {fileID: 8300000, guid: 239803b33ab0407c9dae4724275aa584, type: 2}
+  chips: {fileID: 8300000, guid: f2a4734c63a44bdab0bea333768bb5e2, type: 2}
+  gunshot: {fileID: 8300000, guid: 6460ebefbb66486991dd101f95397d54, type: 2}
+  rockThud: {fileID: 8300000, guid: 0545bc3dc4da4be6a86af79ac00b9491, type: 2}
+  paperSlide: {fileID: 8300000, guid: 5d2f5690e3cc419c9122805f9f7f7733, type: 2}
+  scissors: {fileID: 8300000, guid: 868f1015b2a94150802183f705d01003, type: 2}
+  scissorsCut: {fileID: 8300000, guid: e0b749d7f61a4a408c262545bb612e7e, type: 2}
+  goodResult: {fileID: 8300000, guid: ded8bdb123c74f1d93d06136852735cf, type: 2}
+  impact: {fileID: 8300000, guid: 5962a8d423f54fca83b2ac3136ce4f07, type: 2}
+  levelUp: {fileID: 8300000, guid: b52b5c11aef14c80b77fb2a7c41999d6, type: 2}
+  levelUpAlt: {fileID: 8300000, guid: 752cf8abd41c422098621ba3ba2827d7, type: 2}
+  youWin: {fileID: 8300000, guid: cb2b625d449c48f48c5180d6f6fd40ce, type: 2}
+  applause: {fileID: 8300000, guid: 591806107f4c46bb80be77c340d8374a, type: 2}
+  yeahBoy: {fileID: 8300000, guid: f961bb10d4214d228e33565b7cf167bc, type: 2}
+  fanfare: {fileID: 8300000, guid: cd86ca869e06409796981680a6b55e1d, type: 2}
+  musicLoop: {fileID: 8300000, guid: fc2d7f8b28a14a1097b0f9b8543fe294, type: 2}
+  onTurnStart: {fileID: 8300000, guid: 239803b33ab0407c9dae4724275aa584, type: 2}
+  onCardSelected: {fileID: 8300000, guid: 41ac637a20f744f88dc329b9e645e327, type: 2}
+  onCardsRevealed: {fileID: 8300000, guid: 41ac637a20f744f88dc329b9e645e327, type: 2}
+  onSuitChecked: {fileID: 0}
+  onValueChecked: {fileID: 0}
+  onPlayerWin: {fileID: 8300000, guid: ded8bdb123c74f1d93d06136852735cf, type: 2}
+  onPlayerLose: {fileID: 8300000, guid: 5962a8d423f54fca83b2ac3136ce4f07, type: 2}
+  onDraw: {fileID: 8300000, guid: 752cf8abd41c422098621ba3ba2827d7, type: 2}
+  onCardDiscarded: {fileID: 8300000, guid: f2a4734c63a44bdab0bea333768bb5e2, type: 2}
+  onGameWin: {fileID: 8300000, guid: cb2b625d449c48f48c5180d6f6fd40ce, type: 2}
+  onGameLose: {fileID: 8300000, guid: 5962a8d423f54fca83b2ac3136ce4f07, type: 2}
