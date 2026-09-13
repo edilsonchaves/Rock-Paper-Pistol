@@ -1,47 +1,68 @@
-using System.Collections.Generic;
 using RockPaperPistol.Core;
-using RockPaperPistol.Unity.Battle;
 using UnityEngine;
 
 namespace RockPaperPistol.Unity
 {
     public sealed class AudioManager : MonoBehaviour
     {
-        [SerializeField] private AudioClip cardSelected;
-        [SerializeField] private AudioClip cardsRevealed;
-        [SerializeField] private AudioClip suitChecked;
-        [SerializeField] private AudioClip valueChecked;
-        [SerializeField] private AudioClip playerWin;
-        [SerializeField] private AudioClip playerLose;
-        [SerializeField] private AudioClip draw;
-        [SerializeField] private AudioClip turnStart;
-        [SerializeField] private AudioClip gameWin;
-        [SerializeField] private AudioClip gameLose;
+        public const string ObjectName = "GameAudio";
 
-        private AudioSource _source;
-        private readonly Dictionary<GameplayEvent, AudioClip> _clips = new Dictionary<GameplayEvent, AudioClip>();
+        [SerializeField] private GameSounds sounds;
+
+        private AudioSource _sfx;
+        private AudioSource _music;
+
+        public static AudioManager Instance { get; private set; }
 
         public GameplayEvent? LastEvent { get; private set; }
 
-        private void Awake()
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void Bootstrap()
         {
-            _source = GetComponent<AudioSource>();
-            if (_source == null)
+            EnsureInstance();
+        }
+
+        public static AudioManager EnsureInstance()
+        {
+            if (Instance != null)
             {
-                _source = gameObject.AddComponent<AudioSource>();
+                return Instance;
             }
 
-            _source.playOnAwake = false;
-            Bind(GameplayEvent.CardSelected, cardSelected, "CardSelected", 440f, 0.12f);
-            Bind(GameplayEvent.CardsRevealed, cardsRevealed, "CardsRevealed", 330f, 0.16f);
-            Bind(GameplayEvent.SuitChecked, suitChecked, "SuitChecked", 520f, 0.14f);
-            Bind(GameplayEvent.ValueChecked, valueChecked, "ValueChecked", 620f, 0.14f);
-            Bind(GameplayEvent.PlayerWin, playerWin, "PlayerWin", 784f, 0.22f);
-            Bind(GameplayEvent.PlayerLose, playerLose, "PlayerLose", 196f, 0.22f);
-            Bind(GameplayEvent.Draw, draw, "Draw", 392f, 0.18f);
-            Bind(GameplayEvent.TurnStart, turnStart, "TurnStart", 262f, 0.12f);
-            Bind(GameplayEvent.GameWin, gameWin, "GameWin", 880f, 0.28f);
-            Bind(GameplayEvent.GameLose, gameLose, "GameLose", 147f, 0.28f);
+#if UNITY_2023_1_OR_NEWER
+            AudioManager existing = FindFirstObjectByType<AudioManager>();
+#else
+            AudioManager existing = FindObjectOfType<AudioManager>();
+#endif
+            if (existing != null)
+            {
+                Instance = existing;
+                return existing;
+            }
+
+            GameObject root = new GameObject(ObjectName);
+            DontDestroyOnLoad(root);
+            return root.AddComponent<AudioManager>();
+        }
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+            if (transform.parent == null)
+            {
+                DontDestroyOnLoad(gameObject);
+            }
+
+            _sfx = CreateSource("Sfx", false);
+            _music = CreateSource("Music", true);
+            LoadCatalog();
+            StartMusic();
         }
 
         private void OnEnable()
@@ -52,14 +73,41 @@ namespace RockPaperPistol.Unity
         private void OnDisable()
         {
             GameplayEventBus.Raised -= OnGameplayEvent;
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
 
         public void Play(GameplayEvent gameplayEvent)
         {
             LastEvent = gameplayEvent;
-            if (_clips.TryGetValue(gameplayEvent, out AudioClip clip) && clip != null && _source != null)
+            if (sounds == null || _sfx == null)
             {
-                _source.PlayOneShot(clip);
+                return;
+            }
+
+            AudioClip clip = sounds.ClipFor(gameplayEvent);
+            if (clip != null)
+            {
+                _sfx.PlayOneShot(clip, sounds.SfxVolume);
+            }
+        }
+
+        public void SetPaused(bool paused)
+        {
+            if (_music == null)
+            {
+                return;
+            }
+
+            if (paused)
+            {
+                _music.Pause();
+            }
+            else
+            {
+                _music.UnPause();
             }
         }
 
@@ -68,11 +116,53 @@ namespace RockPaperPistol.Unity
             Play(gameplayEvent);
         }
 
-        private void Bind(GameplayEvent gameplayEvent, AudioClip assigned, string name, float frequency, float seconds)
+        private void LoadCatalog()
         {
-            _clips[gameplayEvent] = assigned != null
-                ? assigned
-                : PlaceholderArt.Tone(name, frequency, seconds);
+            if (sounds != null)
+            {
+                return;
+            }
+
+#if UNITY_EDITOR
+            sounds = UnityEditor.AssetDatabase.LoadAssetAtPath<GameSounds>(GameSounds.DefaultAssetPath);
+#endif
+        }
+
+        private void StartMusic()
+        {
+            if (_music == null || sounds == null || sounds.Music == null)
+            {
+                return;
+            }
+
+            _music.clip = sounds.Music;
+            _music.volume = sounds.MusicVolume;
+            _music.loop = true;
+            if (!_music.isPlaying)
+            {
+                _music.Play();
+            }
+        }
+
+        private AudioSource CreateSource(string childName, bool loop)
+        {
+            Transform child = transform.Find(childName);
+            GameObject go = child != null ? child.gameObject : new GameObject(childName);
+            if (child == null)
+            {
+                go.transform.SetParent(transform, false);
+            }
+
+            AudioSource source = go.GetComponent<AudioSource>();
+            if (source == null)
+            {
+                source = go.AddComponent<AudioSource>();
+            }
+
+            source.playOnAwake = false;
+            source.loop = loop;
+            source.spatialBlend = 0f;
+            return source;
         }
     }
 }
