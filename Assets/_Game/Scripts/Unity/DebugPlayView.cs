@@ -27,9 +27,9 @@ namespace RockPaperPistol.Unity
         private void OnGUI()
         {
 #if UNITY_2023_1_OR_NEWER
-            if (FindFirstObjectByType<Battle.BattleBoard>() != null)
+            if (FindFirstObjectByType<Battle.BattleBoard>() != null) // Necessário fazer retirada.
 #else
-            if (FindObjectOfType<Battle.BattleBoard>() != null)
+            if (FindObjectOfType<Battle.BattleBoard>() != null) // Necessário fazer retirada.
 #endif
             {
                 return;
