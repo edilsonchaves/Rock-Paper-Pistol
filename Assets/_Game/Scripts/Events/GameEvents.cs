@@ -2,7 +2,7 @@ using System;
 using RockPaperPistol.Data;
 using RockPaperPistol.UI.Elements;
 
-namespace RockPaperPistol.Utils
+namespace RockPaperPistol.Events
 {
     public static class GameEvents
     {

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using RockPaperPistol.Data;
-using RockPaperPistol.Utils;
+using RockPaperPistol.Events;
 
 namespace RockPaperPistol.DialogSystem
 {

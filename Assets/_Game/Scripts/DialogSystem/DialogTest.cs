@@ -1,6 +1,6 @@
 using System.Collections;
 using RockPaperPistol.Data;
-using RockPaperPistol.Utils;
+using RockPaperPistol.Events;
 using UnityEngine;
 
 namespace RockPaperPistol.DialogSystem
