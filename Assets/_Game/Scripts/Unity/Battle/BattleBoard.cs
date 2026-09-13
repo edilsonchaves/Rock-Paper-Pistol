@@ -50,12 +50,6 @@ namespace RockPaperPistol.Unity.Battle
             {
                 return;
             }
-
-            if (!GameFlow.IsBattleScene(SceneManager.GetActiveScene().name))
-            {
-                return;
-            }
-
             GameObject root = new GameObject("RockPaperPistol");
             root.AddComponent<GameSessionDriver>();
             AudioManager.EnsureInstance();
@@ -110,7 +104,7 @@ namespace RockPaperPistol.Unity.Battle
                 if (GameInput.LeftClickPressed)
                 {
                     Time.timeScale = 1f;
-                    GameFlow.GoToMenu();
+                    Utils.Utils.LoadScene("SampleScene");
                 }
 
                 return;
