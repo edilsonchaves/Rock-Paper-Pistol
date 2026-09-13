@@ -134,7 +134,20 @@ namespace RockPaperPistol.Unity
             return result;
         }
 
+        public PlayResult PlayFromHand(int playerHandIndex, int enemyHandIndex)
+        {
+            EnsureSession();
+            PlayResult result = _session.PlayFromHand(playerHandIndex, enemyHandIndex);
+            _lastPlay = result;
+            return result;
+        }
+
         public void PlayFromHandAnimated(int handIndex)
+        {
+            PlayFromHandAnimated(handIndex, -1);
+        }
+
+        public void PlayFromHandAnimated(int playerHandIndex, int enemyHandIndex)
         {
             if (IsResolving)
             {
@@ -147,7 +160,7 @@ namespace RockPaperPistol.Unity
                 StopCoroutine(_resolution);
             }
 
-            _resolution = StartCoroutine(ResolveRound(handIndex));
+            _resolution = StartCoroutine(ResolveRound(playerHandIndex, enemyHandIndex));
         }
 
         public void Restart()
@@ -162,7 +175,7 @@ namespace RockPaperPistol.Unity
             _session = new RunSession(enemies, Encounter.DefaultMaxTurns, CurrentLoadout());
         }
 
-        private IEnumerator ResolveRound(int handIndex)
+        private IEnumerator ResolveRound(int handIndex, int enemyHandIndex)
         {
             IsResolving = true;
             SelectedPlayerCard = _session.Deck.Hand[handIndex];
@@ -171,7 +184,9 @@ namespace RockPaperPistol.Unity
 
             yield return new WaitForSeconds(SelectedDelay);
 
-            PlayResult result = PlayFromHand(handIndex);
+            PlayResult result = enemyHandIndex >= 0
+                ? PlayFromHand(handIndex, enemyHandIndex)
+                : PlayFromHand(handIndex);
             ResolutionStep = ResolutionStep.Revealed;
             GameplayEventBus.Raise(GameplayEvent.EnemyCardSelected);
             GameplayEventBus.Raise(GameplayEvent.CardsRevealed);

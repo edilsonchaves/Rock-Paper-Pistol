@@ -126,13 +126,18 @@ namespace RockPaperPistol.Core
 
         public PlayResult PlayFromHand(int handIndex)
         {
+            return PlayFromHand(handIndex, ChooseEnemyHandIndex());
+        }
+
+        public PlayResult PlayFromHand(int playerHandIndex, int enemyHandIndex)
+        {
             if (Phase != RunPhase.InEncounter || CurrentEncounter == null)
             {
                 throw new InvalidOperationException("Não há encontro em andamento.");
             }
 
-            Card played = _deck.Play(handIndex);
-            Card enemyPlayed = _enemyDeck.Play(ChooseEnemyHandIndex());
+            Card played = _deck.Play(playerHandIndex);
+            Card enemyPlayed = _enemyDeck.Play(enemyHandIndex);
             EncounterRoundResult round = CurrentEncounter.PlayRound(played, enemyPlayed);
 
             if (!CurrentEncounter.IsFinished)
