@@ -4,6 +4,7 @@
     "references": [
         "RockPaperPistol.Core",
         "RockPaperPistol.Data",
+        "RockPaperPistol.Utils",
         "Unity.InputSystem",
         "Unity.TextMeshPro"
     ],

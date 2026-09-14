@@ -6,6 +6,11 @@ namespace RockPaperPistol.Utils
 {
     public static class GameEvents
     {
+        public static class Audio
+        {
+            
+        }
+        
         public static class Dialog
         {
             public static Action<DialogPart> ShowDialog;

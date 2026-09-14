@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using RockPaperPistol.Core;
+using RockPaperPistol.Utils;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using AudioManager = RockPaperPistol.Unity.AudioManager;
 
 namespace RockPaperPistol.Unity.Battle
 {
@@ -47,10 +50,9 @@ namespace RockPaperPistol.Unity.Battle
             {
                 return;
             }
-
             GameObject root = new GameObject("RockPaperPistol");
             root.AddComponent<GameSessionDriver>();
-            root.AddComponent<AudioManager>();
+            AudioManager.EnsureInstance();
             root.AddComponent<BattleBoard>();
         }
 
@@ -62,10 +64,7 @@ namespace RockPaperPistol.Unity.Battle
                 _driver = gameObject.AddComponent<GameSessionDriver>();
             }
 
-            if (GetComponent<AudioManager>() == null)
-            {
-                gameObject.AddComponent<AudioManager>();
-            }
+            AudioManager.EnsureInstance();
 
             StyleCamera();
             HideBlockingUi();
@@ -100,15 +99,12 @@ namespace RockPaperPistol.Unity.Battle
             {
                 _promptText.gameObject.SetActive(true);
                 _promptText.text = session.Phase == RunPhase.Victory
-                    ? "Vitória. Clique para nova run."
-                    : "Derrota. Clique para nova run.";
+                    ? "Vitória. Clique para voltar ao menu."
+                    : "Derrota. Clique para voltar ao menu.";
                 if (GameInput.LeftClickPressed)
                 {
-                    _driver.Restart();
-                    _turnFaces.Clear();
-                    ClearTableCards();
-                    _lastStep = (ResolutionStep)(-1);
-                    _lastHandCount = -1;
+                    Time.timeScale = 1f;
+                    Utils.Utils.LoadScene("SampleScene");
                 }
 
                 return;
@@ -412,6 +408,11 @@ namespace RockPaperPistol.Unity.Battle
         {
             _paused = !_paused;
             Time.timeScale = _paused ? 0f : 1f;
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.SetPaused(_paused);
+            }
+
             _pauseText.text = _paused ? "Retomar" : "Pause";
         }
 

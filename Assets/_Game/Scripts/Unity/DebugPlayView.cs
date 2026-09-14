@@ -17,11 +17,7 @@ namespace RockPaperPistol.Unity
                 _driver = gameObject.AddComponent<GameSessionDriver>();
             }
 
-            _audio = GetComponent<AudioManager>();
-            if (_audio == null)
-            {
-                _audio = gameObject.AddComponent<AudioManager>();
-            }
+            _audio = AudioManager.EnsureInstance();
         }
 
         private void OnGUI()

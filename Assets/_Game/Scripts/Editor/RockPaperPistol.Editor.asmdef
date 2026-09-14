@@ -3,7 +3,8 @@
     "rootNamespace": "RockPaperPistol.EditorTools",
     "references": [
         "RockPaperPistol.Core",
-        "RockPaperPistol.Data"
+        "RockPaperPistol.Data",
+        "RockPaperPistol.Unity"
     ],
     "includePlatforms": [
         "Editor"

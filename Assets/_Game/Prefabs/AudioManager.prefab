@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5909169834628163908
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 196460857368772761}
+  - component: {fileID: 132426351739948391}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &196460857368772761
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5909169834628163908}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &132426351739948391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5909169834628163908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RockPaperPistol.Unity::RockPaperPistol.Unity.AudioManager
+  sources:
+  - {fileID: 11400000, guid: 7d607ababa7b4fe2b53ed43c4702ca43, type: 2}
+  - {fileID: 11400000, guid: d5f6e214983743e1b28498bacc950eb7, type: 2}
+  - {fileID: 11400000, guid: a6a9e0951cba469ea9232562689b1df6, type: 2}
+  - {fileID: 11400000, guid: e369e7f8fa454623a967626bb8d6e8ab, type: 2}
+  - {fileID: 11400000, guid: aa92e097461043b7be4c8abe56fbdb0a, type: 2}
+  - {fileID: 11400000, guid: 1af15fb2c0b842fc8c22104b2da1f7ea, type: 2}
+  - {fileID: 11400000, guid: 70cf71ce66414cc9b586a792a631bdb4, type: 2}
+  - {fileID: 11400000, guid: eb0b4e239d104c6cbd36d9094c5214ff, type: 2}
+  - {fileID: 11400000, guid: 8eba6e268e24461ea984429d365822d8, type: 2}
+  - {fileID: 11400000, guid: ea3b9cd7915347e981785d5e397cd43a, type: 2}
+  - {fileID: 11400000, guid: a471e3b0b40b42fc85b2e4e5e30798e8, type: 2}
+  - {fileID: 11400000, guid: d5c172a941154b96b47ad2788a4e3d69, type: 2}
+  - {fileID: 11400000, guid: c4dab6805049438382db993d39df6a59, type: 2}
+  - {fileID: 11400000, guid: c055d696d6524658a87ae0537757cbbf, type: 2}
+  - {fileID: 11400000, guid: aefe9c4363ec4da19990b6777249e974, type: 2}
+  - {fileID: 11400000, guid: 7a3da6a3c32547f59f0c39c3eac3eb16, type: 2}
+  - {fileID: 11400000, guid: dc2398f8f93944018bb18c38c151e56b, type: 2}
+  playbackPrefab: {fileID: 2926804202294028773, guid: a04a59c2f6c956a479b128656f404d5a, type: 3}
+  musicVolume: 0.28
+  sfxVolume: 0.85
