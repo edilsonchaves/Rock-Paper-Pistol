@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace RockPaperPistol.Unity
 {
-    internal static class GameInput
+    public static class GameInput
     {
         public static bool EscapePressed =>
             Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;

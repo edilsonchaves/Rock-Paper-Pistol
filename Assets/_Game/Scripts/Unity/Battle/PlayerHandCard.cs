@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using RockPaperPistol.Core;
 using RockPaperPistol.Utils;
 using UnityEngine;
-using GameInput = RockPaperPistol.Unity.GameInput;
 
 namespace RockPaperPistol.Unity.Battle
 {
@@ -83,12 +82,12 @@ namespace RockPaperPistol.Unity.Battle
                     continue;
                 }
 
-                Card card = _cards[i];
+                /*Card card = _cards[i];
                 CardView view = CardView.Create(transform, "PlayerCard");
                 view.HandIndex = i;
                 view.Interactable = interactable;
                 view.Bind(card, card.Suit, DisplayValue(card, encounterTurn), false, true);
-                _views.Add(view);
+                _views.Add(view);*/
             }
 
             Fan();

@@ -1,21 +1,24 @@
 using System;
 using System.Collections.Generic;
-using RockPaperPistol.Core;
 using UnityEngine;
+using RockPaperPistol.Core;
+using RockPaperPistol.Data;
+using RockPaperPistol.Utils;
 
 namespace RockPaperPistol.Unity.Battle
 {
     public sealed class EnemyHandCard : MonoBehaviour
     {
+        [SerializeField] private CardView _cardPrefab;
         private readonly List<Card> _cards = new List<Card>();
         private readonly List<CardView> _views = new List<CardView>();
         private readonly System.Random _rng = new System.Random();
-
+        [SerializeField] private Transform _enemyHands;
         public IReadOnlyList<Card> Cards => _cards;
         public int Count => _cards.Count;
         public HandPlay? LastPlay { get; private set; }
 
-        public void ReceiveCards(IReadOnlyList<Card> cards, bool showHand)
+        public void ReceiveCards(List<Card> cards, List<CardDefinition> cardDefinition, bool showHand)
         {
             _cards.Clear();
             if (cards != null)
@@ -23,10 +26,13 @@ namespace RockPaperPistol.Unity.Battle
                 for (int i = 0; i < cards.Count; i++)
                 {
                     _cards.Add(cards[i]);
+                    var cardView = Instantiate(_cardPrefab, Vector3.zero, Quaternion.identity);
+                    cardView.Setup(_enemyHands, cardDefinition[i], showHand);
+                    _views.Add(cardView);
                 }
             }
 
-            Rebuild(showHand);
+            Fan();
         }
 
         public HandPlay ChoosePlay(Suit preferredSuit, int currentTurn, int maxTurns, int pistolAvailableFromTurn)
@@ -60,7 +66,7 @@ namespace RockPaperPistol.Unity.Battle
             for (int i = 0; i < _cards.Count; i++)
             {
                 Card card = _cards[i];
-                CardView view = CardView.Create(transform, "EnemyCard");
+                CardView view = _views[i];
                 view.HandIndex = i;
                 view.Interactable = false;
                 view.Bind(card, card.Suit, card.Value, false, false);
