@@ -1,5 +1,67 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4993559181567343072
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5373807509991922339}
+  m_Layer: 0
+  m_Name: Player Card Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5373807509991922339
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4993559181567343072}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.13, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2689346876837317517}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5837222415728903445
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5250280714657981497}
+  m_Layer: 0
+  m_Name: Enemy Card Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5250280714657981497
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5837222415728903445}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.13, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2689346876837317517}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8844322453827041035
 GameObject:
   m_ObjectHideFlags: 0
@@ -29,7 +91,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5373807509991922339}
+  - {fileID: 5250280714657981497}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5179050520250822557
@@ -45,6 +109,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RockPaperPistol.Managers::RockPaperPistol.Managers.TableManager
   _gameContent: {fileID: 11400000, guid: 94a148c359e560a712839bcc123d4e4f, type: 2}
-  _playerDeck: {fileID: 0}
-  _currentEnemy: {fileID: 0}
+  _playerDeck: {fileID: 11400000, guid: 71ab82cd93ef04a15b26c37d48e59061, type: 2}
   _enemyBody: {fileID: 0}
+  _playerBody: {fileID: 0}
+  _tablePlayerCardPosition: {fileID: 5373807509991922339}
+  _tableEnemyCardPosition: {fileID: 5250280714657981497}
+  _currentTablePlayerCard: {fileID: 0}
+  _currentTableEnemyCard: {fileID: 0}
+  _currentTurn: 0
+  _totalTurn: 7
+  _playerScore: 0
+  _enemyScore: 0
+  _steak: 0

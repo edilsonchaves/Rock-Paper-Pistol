@@ -18,7 +18,7 @@ namespace RockPaperPistol.Unity.Battle
         public int Count => _cards.Count;
         public HandPlay? LastPlay { get; private set; }
 
-        public void ReceiveCards(List<Card> cards, List<CardDefinition> cardDefinition, bool showHand)
+        public void ReceiveCards(List<Card> cards, List<CardDefinition> cardDefinition, bool showHand, Action<CardView, CardDefinition> cardSelected)
         {
             _cards.Clear();
             if (cards != null)
@@ -27,12 +27,21 @@ namespace RockPaperPistol.Unity.Battle
                 {
                     _cards.Add(cards[i]);
                     var cardView = Instantiate(_cardPrefab, Vector3.zero, Quaternion.identity);
-                    cardView.Setup(_enemyHands, cardDefinition[i], showHand);
+                    cardView.Setup(_enemyHands, cardDefinition[i], showHand, cardSelected);
+                    cardView.SetColliderEnabled(false);
                     _views.Add(cardView);
                 }
             }
 
             Fan();
+        }
+
+        public void ThrowSequence()
+        {
+           CardView cardSelected =  _views[0];
+           _views.RemoveAt(0);
+           _cards.RemoveAt(0);
+           cardSelected.EnemySelected();
         }
 
         public HandPlay ChoosePlay(Suit preferredSuit, int currentTurn, int maxTurns, int pistolAvailableFromTurn)

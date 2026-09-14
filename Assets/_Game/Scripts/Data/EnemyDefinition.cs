@@ -15,5 +15,7 @@ namespace RockPaperPistol.Data
         public PistolId Pistol = PistolId.None;
         public int PistolAvailableFromTurn = 1;
         public List<CardDefinition> Sequence;
+        
+        public Sprite ImageRoundWinner;
     }
 }

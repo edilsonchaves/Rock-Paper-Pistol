@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using RockPaperPistol.Core;
 using RockPaperPistol.Unity.Battle;
 using RockPaperPistol.Utils;
-namespace RockPaperPistol.Managers
+using System;
+
+namespace RockPaperPistol.Enemy
 { 
     public class EnemyControl : MonoBehaviour
     {
@@ -13,8 +15,11 @@ namespace RockPaperPistol.Managers
         [SerializeField] private List<CardDefinition> _enemyDeck;
 
         [SerializeField] private EnemyHandCard _enemyHand;
-        public void SetupEnemy(EnemyDefinition data)
+
+        [SerializeField] private EnemyDefinition _currentEnemy;
+        public void SetupEnemy(EnemyDefinition data, Action<CardView, CardDefinition> cardSelected)
         {
+            _currentEnemy = data;
             _avatarBody.color = data.SpriteColor;
             _avatarName = data.DisplayName;
             foreach(var card in data.Sequence.Shuffle())
@@ -32,7 +37,17 @@ namespace RockPaperPistol.Managers
                     }
             }
 
-            _enemyHand.ReceiveCards(cards, _enemyDeck, false);
+            _enemyHand.ReceiveCards(cards, _enemyDeck, false, cardSelected);
+        }
+
+        public void ThrowCardInSequence()
+        {
+            _enemyHand.ThrowSequence();
+        }
+
+        public Sprite GetAvatarSprite()
+        {
+            return _currentEnemy.ImageRoundWinner;
         }
     }
 }

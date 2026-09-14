@@ -28,3 +28,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e51ea72782f400c4186072f1bd03967d, type: 2}
   - {fileID: 11400000, guid: 2e3f5ad93c3bf2d4cb07c40d9546c3e4, type: 2}
   - {fileID: 11400000, guid: 88c352e0a4332a842bb6df54754f5501, type: 2}
+  ImageRoundWinner: {fileID: 3342659379202977213, guid: 7e0666d6988f4e442ba17b24f95dde0b, type: 3}

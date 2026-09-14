@@ -13,32 +13,14 @@ MonoBehaviour:
   m_Name: Equilibrado
   m_EditorClassIdentifier: RockPaperPistol.Data::RockPaperPistol.Data.DeckDefinition
   DisplayName: Baralho Base
-  Cards:
-  - Suit: 0
-    Value: 1
-  - Suit: 0
-    Value: 2
-  - Suit: 0
-    Value: 3
-  - Suit: 1
-    Value: 1
-  - Suit: 1
-    Value: 2
-  - Suit: 1
-    Value: 3
-  - Suit: 2
-    Value: 1
-  - Suit: 2
-    Value: 2
-  - Suit: 2
-    Value: 3
-  CardsOficial:
+  Sequence:
+  - {fileID: 11400000, guid: f386a64c5c191f949b3363232d83f8ac, type: 2}
+  - {fileID: 11400000, guid: d028fe1de19aebe4ca36631f6d391d3d, type: 2}
+  - {fileID: 11400000, guid: e9d877bdf68981e409256c290fc50eb3, type: 2}
   - {fileID: 11400000, guid: 4dbd1624c813f32478297fd8e2de1abe, type: 2}
   - {fileID: 11400000, guid: 564b317ab126893409d3d9eef1ae2a23, type: 2}
   - {fileID: 11400000, guid: 53550f0e9dfbd24439acc6f4a1794cf9, type: 2}
   - {fileID: 11400000, guid: e51ea72782f400c4186072f1bd03967d, type: 2}
   - {fileID: 11400000, guid: 2e3f5ad93c3bf2d4cb07c40d9546c3e4, type: 2}
   - {fileID: 11400000, guid: 88c352e0a4332a842bb6df54754f5501, type: 2}
-  - {fileID: 11400000, guid: f386a64c5c191f949b3363232d83f8ac, type: 2}
-  - {fileID: 11400000, guid: d028fe1de19aebe4ca36631f6d391d3d, type: 2}
-  - {fileID: 11400000, guid: e9d877bdf68981e409256c290fc50eb3, type: 2}
+  ImageRoundWinner: {fileID: -8106049156952895591, guid: e306ab5ee9317a840898109c3b3e0b06, type: 3}

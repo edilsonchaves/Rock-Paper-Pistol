@@ -1,6 +1,6 @@
+using System;
 using RockPaperPistol.Core;
 using RockPaperPistol.Data;
-using TMPro;
 using UnityEngine;
 
 namespace RockPaperPistol.Unity.Battle
@@ -13,16 +13,20 @@ namespace RockPaperPistol.Unity.Battle
 
         [SerializeField] private CardDefinition _card;
         [SerializeField] private SpriteRenderer _body;
+        [SerializeField] private SpriteRenderer _plusOne;
         [SerializeField] private SpriteRenderer _outline;
         [SerializeField] private BoxCollider2D _collider;
 
         [SerializeField] private Sprite _defaultBackSprite;
-        public void Setup(Transform parent, CardDefinition cardDefinition, bool isShowCard, int handIndex = 0)
+
+        private Action<CardView, CardDefinition> _cardSelection;
+        public void Setup(Transform parent, CardDefinition cardDefinition, bool isShowCard, Action<CardView, CardDefinition> cardSelection, int handIndex = 0)
         {
             transform.SetParent(parent);
             _card = cardDefinition;
             _body.sprite = isShowCard ? cardDefinition.CardImage : _defaultBackSprite;
             HandIndex = handIndex;
+            _cardSelection = cardSelection;
         }
 
         public void Bind(Card card, Suit displaySuit, int displayValue, bool plusOne, bool revealed)
@@ -51,6 +55,39 @@ namespace RockPaperPistol.Unity.Battle
             {
                 _collider.enabled = enabled && Interactable;
             }
+        }
+
+        public void EnemySelected()
+        {
+            Debug.Log("Testando");
+            _body.sprite = _card.CardImage;
+            _cardSelection?.Invoke(this, _card);
+        }
+
+        public void CardClicked()
+        {
+            _cardSelection?.Invoke(this, _card);
+        }
+
+        public int GetValue(int addValue = 0)
+        {
+            var result = 0;
+            if(addValue > 0)
+            {
+                CardIsStronger();
+            }
+
+            if(_card is CardNormalDefinition)
+            {
+                var cardNormal = (CardNormalDefinition) _card;
+                result = cardNormal.Value + addValue;
+            }
+            return result;
+        }
+
+        private void CardIsStronger()
+        {
+            _plusOne.enabled = true;
         }
     }
 }

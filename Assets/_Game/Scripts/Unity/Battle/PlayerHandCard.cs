@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using RockPaperPistol.Core;
+using RockPaperPistol.Data;
 using RockPaperPistol.Utils;
 using UnityEngine;
 
@@ -7,6 +9,12 @@ namespace RockPaperPistol.Unity.Battle
 {
     public sealed class PlayerHandCard : MonoBehaviour
     {
+        [SerializeField] private CardView _cardPrefab;
+        [SerializeField] private Transform _hands;
+        [SerializeField] private Transform _initialCardSpawnPosition;
+
+        [SerializeField] private float _xDif;
+
         private readonly List<Card> _cards = new List<Card>();
         private readonly List<CardView> _views = new List<CardView>();
         private CardView _hover;
@@ -16,7 +24,7 @@ namespace RockPaperPistol.Unity.Battle
         public int Count => _cards.Count;
         public HandPlay? LastPlay { get; private set; }
 
-        public void ReceiveCards(IReadOnlyList<Card> cards, int encounterTurn, bool interactable, int hiddenIndex)
+        public void ReceiveCards(List<Card> cards, List<CardDefinition> cardDefinition, bool showHand, bool interactable, Action<CardView, CardDefinition> cardSelection)
         {
             _cards.Clear();
             if (cards != null)
@@ -24,10 +32,12 @@ namespace RockPaperPistol.Unity.Battle
                 for (int i = 0; i < cards.Count; i++)
                 {
                     _cards.Add(cards[i]);
+                    var cardView = Instantiate(_cardPrefab, Vector3.zero, Quaternion.identity);
+                    cardView.Setup(_hands, cardDefinition[i], showHand, cardSelection);
+                    _views.Add(cardView);
                 }
             }
-
-            Rebuild(encounterTurn, interactable, hiddenIndex);
+            Fan();
         }
 
         public void ChooseSuit(Suit suit)
@@ -72,22 +82,18 @@ namespace RockPaperPistol.Unity.Battle
             return true;
         }
 
-        private void Rebuild(int encounterTurn, bool interactable, int hiddenIndex)
+        private void Rebuild(bool interactable)
         {
             ClearViews();
             for (int i = 0; i < _cards.Count; i++)
             {
-                if (i == hiddenIndex)
-                {
-                    continue;
-                }
-
-                /*Card card = _cards[i];
-                CardView view = CardView.Create(transform, "PlayerCard");
+                Card card = _cards[i];
+                CardView view = _views[i];
                 view.HandIndex = i;
                 view.Interactable = interactable;
-                view.Bind(card, card.Suit, DisplayValue(card, encounterTurn), false, true);
-                _views.Add(view);*/
+                view.Bind(card, card.Suit, card.Value, false, true);
+                view.SetColliderEnabled(true);
+                _views.Add(view);
             }
 
             Fan();
@@ -98,12 +104,8 @@ namespace RockPaperPistol.Unity.Battle
             int count = _views.Count;
             for (int i = 0; i < count; i++)
             {
-                float t = count <= 1 ? 0.5f : i / (float)(count - 1);
-                float x = Mathf.Lerp(-6.2f, 6.2f, t);
-                float angle = Mathf.Lerp(12f, -12f, t);
-                _views[i].transform.localPosition = new Vector3(x, -3.2f, 0f);
-                _views[i].transform.localRotation = Quaternion.Euler(0f, 0f, angle);
-                _views[i].transform.localScale = Vector3.one * 0.82f;
+                _views[i].transform.localPosition = new Vector3(_initialCardSpawnPosition.position.x + _xDif * i, 0, 0f);
+                _views[i].transform.localScale = Vector3.one * 0.38f;
             }
         }
 

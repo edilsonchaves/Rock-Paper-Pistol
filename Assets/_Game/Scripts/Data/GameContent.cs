@@ -20,7 +20,7 @@ namespace RockPaperPistol.Data
             NamedDeck[] result = new NamedDeck[Decks.Length];
             for (int i = 0; i < Decks.Length; i++)
             {
-                result[i] = Decks[i].ToNamedDeck();
+                //result[i] = Decks[i].ToNamedDeck();
             }
 
             return result;

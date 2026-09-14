@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: RockPaperPistol.Data::RockPaperPistol.Data.CardNormalDefinition
   Kind: 0
   CardImage: {fileID: 7211743710861990300, guid: c801315d2e0d9234b8e6cd38387b4327, type: 3}
-  Suit: 0
+  Suit: 1
   Value: 1

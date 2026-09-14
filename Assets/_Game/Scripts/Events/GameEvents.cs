@@ -1,6 +1,7 @@
 using System;
 using RockPaperPistol.Data;
 using RockPaperPistol.UI.Elements;
+using UnityEngine;
 
 namespace RockPaperPistol.Events
 {
@@ -21,6 +22,8 @@ namespace RockPaperPistol.Events
         public static class UI
         {
             public static Action<int, GenericButton> onSelectPistol;
+            public static Action<int, int> onRoundUpdate;
+            public static Action<int, Sprite> onWinnerUpdate;
 
         }
     }

@@ -8,14 +8,11 @@ namespace RockPaperPistol.Utils
 {
     public static List<T> Shuffle<T>(this List<T> original)
     {
-        List<T> result = new List<T>(original);
-
-
         List<T> shuffledList = original
             .OrderBy(x => Random.value)
             .ToList();
 
-        return result;
+        return shuffledList;
     }
 }
 }
