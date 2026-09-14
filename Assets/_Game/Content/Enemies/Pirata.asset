@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Pirata
   m_EditorClassIdentifier: RockPaperPistol.Data::RockPaperPistol.Data.EnemyDefinition
   DisplayName: Pirata
+  SpriteColor: {r: 0.043704987, g: 0, b: 1, a: 1}
   Behavior: 1
   PreferredSuit: 2
   Pistol: 4

@@ -1,7 +1,9 @@
 {
     "name": "RockPaperPistol.Enemy",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:08a227fb752805f4587bf85cd134e044"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

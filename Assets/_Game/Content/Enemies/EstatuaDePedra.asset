@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d9f3b02e1c8504f0b27d6e9f8031245, type: 3}
   m_Name: EstatuaDePedra
   m_EditorClassIdentifier: RockPaperPistol.Data::RockPaperPistol.Data.EnemyDefinition
-  DisplayName: Estátua de Pedra
+  DisplayName: "Est\xE1tua de Pedra"
+  SpriteColor: {r: 1, g: 0, b: 0, a: 1}
   Behavior: 0
   PreferredSuit: 0
   Pistol: 2

@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d9f3b02e1c8504f0b27d6e9f8031245, type: 3}
   m_Name: Mumia
   m_EditorClassIdentifier: RockPaperPistol.Data::RockPaperPistol.Data.EnemyDefinition
-  DisplayName: Múmia
+  DisplayName: "M\xFAmia"
+  SpriteColor: {r: 0, g: 1, b: 0.003575325, a: 1}
   Behavior: 0
   PreferredSuit: 1
   Pistol: 3
