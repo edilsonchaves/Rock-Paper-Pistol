@@ -4,24 +4,21 @@ using RockPaperPistol.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using AudioManager = RockPaperPistol.Unity.AudioManager;
 
 namespace RockPaperPistol.Unity.Battle
 {
-    public sealed class BattleBoard : MonoBehaviour
+    public sealed class BattleBoard : MonoBehaviour // Necessário fazer retirada.
     {
         private static readonly Vector3 PlayerSlot = new Vector3(-2.15f, -0.15f, 0f);
         private static readonly Vector3 EnemySlot = new Vector3(2.15f, 0.85f, 0f);
         private static readonly Vector3 OpponentPos = new Vector3(0f, 2.55f, 0f);
 
         private GameSessionDriver _driver;
-        private readonly List<CardView> _hand = new List<CardView>();
-        private readonly List<SpriteRenderer> _enemyBacks = new List<SpriteRenderer>();
+        private PlayerHandCard _playerHand;
+        private EnemyHandCard _enemyHand;
         private readonly List<SpriteRenderer> _circles = new List<SpriteRenderer>();
         private readonly List<RoundOutcome> _turnFaces = new List<RoundOutcome>();
 
-        private Transform _handRoot;
-        private Transform _enemyHandRoot;
         private CardView _playerSlotCard;
         private CardView _enemySlotCard;
         private SpriteRenderer _bubble;
@@ -30,7 +27,6 @@ namespace RockPaperPistol.Unity.Battle
         private TextMeshPro _bubbleText;
         private TextMeshPro _promptText;
         private TextMeshPro _pauseText;
-        private CardView _hover;
         private ResolutionStep _lastStep = (ResolutionStep)(-1);
         private int _lastHandCount = -1;
         private int _lastEnemyCount = -1;
@@ -42,18 +38,10 @@ namespace RockPaperPistol.Unity.Battle
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
         {
-#if UNITY_2023_1_OR_NEWER
-            if (FindFirstObjectByType<BattleBoard>() != null)
-#else
-            if (FindObjectOfType<BattleBoard>() != null)
-#endif
-            {
-                return;
-            }
             GameObject root = new GameObject("RockPaperPistol");
             root.AddComponent<GameSessionDriver>();
-            AudioManager.EnsureInstance();
-            root.AddComponent<BattleBoard>();
+            root.AddComponent<AudioManager>();
+            root.AddComponent<BattleBoard>(); // Necessário fazer retirada.
         }
 
         private void Awake()
@@ -64,7 +52,10 @@ namespace RockPaperPistol.Unity.Battle
                 _driver = gameObject.AddComponent<GameSessionDriver>();
             }
 
-            AudioManager.EnsureInstance();
+            if (GetComponent<AudioManager>() == null)
+            {
+                gameObject.AddComponent<AudioManager>();
+            }
 
             StyleCamera();
             HideBlockingUi();
@@ -104,7 +95,7 @@ namespace RockPaperPistol.Unity.Battle
                 if (GameInput.LeftClickPressed)
                 {
                     Time.timeScale = 1f;
-                    Utils.Utils.LoadScene("SampleScene");
+                    // Ir para tela de menu
                 }
 
                 return;
@@ -161,41 +152,22 @@ namespace RockPaperPistol.Unity.Battle
             }
 
             RefreshCircles();
-            LayoutEnemyBacks(session.EnemyDeck.HandCount);
-            LayoutHand(session);
+            LayoutHands(session);
             LayoutTable(session);
             UpdateBubble();
         }
 
-        private void LayoutHand(RunSession session)
+        private void LayoutHands(RunSession session)
         {
-            ClearViews(_hand, _handRoot);
-            IReadOnlyList<Card> cards = session.Deck.Hand;
-            int turnForHand = EncounterTurnBeforePlay(session);
-            int count = cards.Count;
-            for (int i = 0; i < count; i++)
-            {
-                if (_driver.ResolutionStep == ResolutionStep.Selected && i == _selectedIndex)
-                {
-                    continue;
-                }
-
-                CardView view = CardView.Create(_handRoot, "HandCard");
-                view.HandIndex = i;
-                view.Interactable = !_driver.IsResolving;
-                view.Bind(cards[i], cards[i].Suit, DisplayValue(cards[i], turnForHand), false, true);
-                _hand.Add(view);
-            }
-
-            for (int i = 0; i < _hand.Count; i++)
-            {
-                float t = _hand.Count <= 1 ? 0.5f : i / (float)(_hand.Count - 1);
-                float x = Mathf.Lerp(-6.2f, 6.2f, t);
-                float angle = Mathf.Lerp(12f, -12f, t);
-                _hand[i].transform.localPosition = new Vector3(x, -3.2f, 0f);
-                _hand[i].transform.localRotation = Quaternion.Euler(0f, 0f, angle);
-                _hand[i].transform.localScale = Vector3.one * 0.82f;
-            }
+            int hiddenIndex = _driver.ResolutionStep == ResolutionStep.Selected ? _selectedIndex : -1;
+            _playerHand.ReceiveCards(
+                session.Deck.Hand,
+                EncounterTurnBeforePlay(session),
+                !_driver.IsResolving,
+                hiddenIndex);
+            _enemyHand.ReceiveCards(
+                session.EnemyDeck.Hand,
+                _driver.ResolutionStep == ResolutionStep.None);
 
             if (_driver.ResolutionStep == ResolutionStep.None)
             {
@@ -266,36 +238,6 @@ namespace RockPaperPistol.Unity.Battle
             }
         }
 
-        private void LayoutEnemyBacks(int remaining)
-        {
-            while (_enemyBacks.Count < remaining)
-            {
-                GameObject go = new GameObject("EnemyBack");
-                go.transform.SetParent(_enemyHandRoot, false);
-                SpriteRenderer renderer = go.AddComponent<SpriteRenderer>();
-                renderer.sprite = PlaceholderArt.CardBack();
-                renderer.sortingOrder = 4;
-                PlaceholderArt.ApplyVisibleMaterial(renderer);
-                _enemyBacks.Add(renderer);
-            }
-
-            for (int i = 0; i < _enemyBacks.Count; i++)
-            {
-                bool on = i < remaining && _driver.ResolutionStep == ResolutionStep.None;
-                _enemyBacks[i].enabled = on;
-                if (!on)
-                {
-                    continue;
-                }
-
-                float t = remaining == 1 ? 0.5f : i / (float)(remaining - 1);
-                float x = Mathf.Lerp(-1.6f, 1.6f, t);
-                _enemyBacks[i].transform.localPosition = new Vector3(x, 1.55f, 0f);
-                _enemyBacks[i].transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(10f, -10f, t));
-                _enemyBacks[i].transform.localScale = Vector3.one * 0.38f;
-            }
-        }
-
         private void RefreshCircles()
         {
             for (int i = 0; i < _circles.Count; i++)
@@ -347,48 +289,21 @@ namespace RockPaperPistol.Unity.Battle
 
         private void HandleHoverAndClick()
         {
-            CardView hit = RaycastCard();
-            if (_hover != hit)
-            {
-                if (_hover != null)
-                {
-                    _hover.SetHover(false);
-                }
-
-                _hover = hit;
-                if (_hover != null)
-                {
-                    _hover.SetHover(true);
-                }
-            }
-
-            if (hit == null || !GameInput.LeftClickPressed || _driver.IsResolving)
+            if (_driver.IsResolving || !_playerHand.TrySelect(out HandPlay play))
             {
                 return;
             }
 
-            _selectedIndex = hit.HandIndex;
-            _driver.PlayFromHandAnimated(hit.HandIndex);
-        }
+            RunSession session = _driver.Session;
+            Encounter encounter = session.CurrentEncounter;
+            HandPlay enemyPlay = _enemyHand.ChoosePlay(
+                session.CurrentEnemy.PreferredSuit,
+                EncounterTurnBeforePlay(session),
+                encounter != null ? encounter.MaxTurns : session.MaxTurns,
+                session.CurrentEnemy.PistolAvailableFromTurn);
 
-        private CardView RaycastCard()
-        {
-            Camera camera = Camera.main;
-            if (camera == null)
-            {
-                return null;
-            }
-
-            Vector3 mouse = GameInput.MouseScreenPosition;
-            mouse.z = Mathf.Abs(camera.transform.position.z);
-            Vector3 world = camera.ScreenToWorldPoint(mouse);
-            RaycastHit2D hit = Physics2D.Raycast(world, Vector2.zero);
-            if (hit.collider == null)
-            {
-                return null;
-            }
-
-            return hit.collider.GetComponent<CardView>();
+            _selectedIndex = play.HandIndex;
+            _driver.PlayFromHandAnimated(play.HandIndex, enemyPlay.HandIndex);
         }
 
         private bool ClickedWorld(Vector3 center, float w, float h)
@@ -408,11 +323,6 @@ namespace RockPaperPistol.Unity.Battle
         {
             _paused = !_paused;
             Time.timeScale = _paused ? 0f : 1f;
-            if (AudioManager.Instance != null)
-            {
-                AudioManager.Instance.SetPaused(_paused);
-            }
-
             _pauseText.text = _paused ? "Retomar" : "Pause";
         }
 
@@ -423,10 +333,13 @@ namespace RockPaperPistol.Unity.Battle
             CreateSprite("EnemySlot", PlaceholderArt.Slot(), EnemySlot, Vector3.one * 0.82f, 1);
             CreateSprite("Opponent", PlaceholderArt.Opponent(), OpponentPos, Vector3.one * 1.15f, 3);
 
-            _handRoot = new GameObject("Hand").transform;
-            _handRoot.SetParent(transform, false);
-            _enemyHandRoot = new GameObject("EnemyHand").transform;
-            _enemyHandRoot.SetParent(transform, false);
+            GameObject playerHand = new GameObject("PlayerHand");
+            playerHand.transform.SetParent(transform, false);
+            _playerHand = playerHand.AddComponent<PlayerHandCard>();
+
+            GameObject enemyHand = new GameObject("EnemyHand");
+            enemyHand.transform.SetParent(transform, false);
+            _enemyHand = enemyHand.AddComponent<EnemyHandCard>();
 
             _bubble = CreateSprite("Bubble", PlaceholderArt.Bubble(), new Vector3(3.4f, 3.15f, 0f), Vector3.one * 1.3f, 6);
             _bubble.enabled = false;
@@ -493,28 +406,6 @@ namespace RockPaperPistol.Unity.Battle
             {
                 Destroy(_enemySlotCard.gameObject);
                 _enemySlotCard = null;
-            }
-        }
-
-        private static void ClearViews(List<CardView> views, Transform root)
-        {
-            for (int i = 0; i < views.Count; i++)
-            {
-                if (views[i] != null)
-                {
-                    Destroy(views[i].gameObject);
-                }
-            }
-
-            views.Clear();
-            if (root == null)
-            {
-                return;
-            }
-
-            for (int i = root.childCount - 1; i >= 0; i--)
-            {
-                Destroy(root.GetChild(i).gameObject);
             }
         }
 
