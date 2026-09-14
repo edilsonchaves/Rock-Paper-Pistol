@@ -208,7 +208,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1256504368837702994, guid: 8c948455dd0dbc745a9cf7d21821557d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -229
       objectReference: {fileID: 0}
     - target: {fileID: 3082985313314717822, guid: 8c948455dd0dbc745a9cf7d21821557d, type: 3}
       propertyPath: m_Pivot.x
@@ -293,6 +293,18 @@ PrefabInstance:
     - target: {fileID: 4065003595535331703, guid: 8c948455dd0dbc745a9cf7d21821557d, type: 3}
       propertyPath: m_Name
       value: Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 4829745896999617211, guid: 8c948455dd0dbc745a9cf7d21821557d, type: 3}
+      propertyPath: m_Color.b
+      value: 0.6039216
+      objectReference: {fileID: 0}
+    - target: {fileID: 4829745896999617211, guid: 8c948455dd0dbc745a9cf7d21821557d, type: 3}
+      propertyPath: m_Color.g
+      value: 0.5568628
+      objectReference: {fileID: 0}
+    - target: {fileID: 4829745896999617211, guid: 8c948455dd0dbc745a9cf7d21821557d, type: 3}
+      propertyPath: m_Color.r
+      value: 0.29803923
       objectReference: {fileID: 0}
     - target: {fileID: 4882575708331901871, guid: 8c948455dd0dbc745a9cf7d21821557d, type: 3}
       propertyPath: m_IsActive
