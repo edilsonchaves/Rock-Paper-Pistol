@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: de9e278a2e2a30a4ba866abe8cfe0cfc
+guid: b662aa0203cbed94dbfcd935c9ecd5c6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7592720511808699011
-    second: ui_BalaoDeFala_0
+      213: -7297666310715136900
+    second: ui_PistolSelectionBorder_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ui_BalaoDeFala_0
+      name: ui_PistolSelectionBorder_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 504
-        height: 273
+        width: 1030
+        height: 910
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 38afd29d313ce5960800000000000000
-      internalID: 7592720511808699011
+      spriteID: c742d74b72b79ba90800000000000000
+      internalID: -7297666310715136900
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ui_BalaoDeFala_0: 7592720511808699011
+      ui_PistolSelectionBorder_0: -7297666310715136900
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

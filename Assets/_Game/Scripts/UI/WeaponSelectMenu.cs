@@ -14,7 +14,7 @@ namespace RockPaperPistol.UI
         [SerializeField] private GenericButton _startButton;
         [SerializeField] private GenericButton _backMenuButton;
 
-        [SerializeField] private PistolId _currentPistolSelect;
+        [SerializeField] private PistolsEnum _currentPistolSelect;
 
         private static string SCENE_MENU_NAME = "MainMenu";
         private static string SCENE_GAME_NAME = "SampleScene";
@@ -34,11 +34,18 @@ namespace RockPaperPistol.UI
 
         private void BackMenu()
         {
-            Utils.Utils.LoadScene(SCENE_MENU_NAME);        }
+            Utils.Utils.LoadScene(SCENE_MENU_NAME);
+        }
 
         private void StartGame()
         {
             GameManager.Instance.DefineHeroPistol(_currentPistolSelect);
+            _weaponMenu.SetActive(false);
+            _battleVersusUI.SetActive(true);
+        }
+
+        private void LoadBattle()
+        {
             Utils.Utils.LoadScene(SCENE_GAME_NAME);
         }
 
@@ -50,7 +57,7 @@ namespace RockPaperPistol.UI
             }
             else
             {
-                _currentPistolSelect = (PistolId) buttonIndex;
+                _currentPistolSelect = (PistolsEnum) buttonIndex;
                 _currentSelectedButton = selectedButton;
             }
             _startButton.SetInteractableButtonState(_currentSelectedButton != null);
