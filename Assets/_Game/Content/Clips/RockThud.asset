@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f3c2a1b9d0e4c6a87b15e2f3a4d5c60, type: 3}
   m_Name: RockThud
   m_EditorClassIdentifier: RockPaperPistol.Data::RockPaperPistol.Data.Clip
-  file: {fileID: 8300000, guid: fa26029f1b7a48d2a8cbb95b8fac7537, type: 2}
+  file: {fileID: 0}

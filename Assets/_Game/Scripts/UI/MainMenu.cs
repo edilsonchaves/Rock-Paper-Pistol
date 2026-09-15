@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using RockPaperPistol.UI.Elements;
 using UnityEngine.UI;
+
 namespace RockPaperPistol.UI
     {
     public class MainMenu : MonoBehaviour
@@ -12,7 +13,7 @@ namespace RockPaperPistol.UI
         [SerializeField] private GenericButton _exitButton;
         [SerializeField] private Animator _animatorMenuUI;
 
-        //Mudança de Rodolfo
+        //MudanÃ§a de Rodolfo
         [SerializeField] private GameObject _returnButton;
         [SerializeField] private GameObject _mainMenuBox;
         [SerializeField] private GameObject _optionsMenuBox;
@@ -27,7 +28,7 @@ namespace RockPaperPistol.UI
         
         [SerializeField] private int _tutorialIndex = 0;
 
-        //Acaba aqui as variaveis de mudança do Rodolfo
+        //Acaba aqui as variaveis de mudanï¿½a do Rodolfo
 
         private const string START_GAME_ANIMATION_TRIGGER = "StartGame";
         private const string SELECT_WEAPON_SCENE = "WeaponScene";

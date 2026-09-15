@@ -8,22 +8,8 @@ namespace RockPaperPistol.Data
     public sealed class DeckDefinition : ScriptableObject
     {
         public string DisplayName;
-        public CardData[] Cards = new CardData[9];
-        public CardDefinition[] CardsOficial;
-        public IReadOnlyList<Card> ToCards()
-        {
-            Card[] result = new Card[Cards != null ? Cards.Length : 0];
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = Cards[i].ToCard();
-            }
+        public List<CardDefinition> Sequence;
+        public Sprite ImageRoundWinner;
 
-            return result;
-        }
-
-        public NamedDeck ToNamedDeck()
-        {
-            return new NamedDeck(string.IsNullOrEmpty(DisplayName) ? name : DisplayName, ToCards());
-        }
     }
 }

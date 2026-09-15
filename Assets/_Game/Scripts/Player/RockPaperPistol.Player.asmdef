@@ -1,0 +1,19 @@
+{
+    "name": "RockPaperPistol.Player",
+    "rootNamespace": "",
+    "references": [
+        "GUID:08a227fb752805f4587bf85cd134e044",
+        "GUID:105fd1c2fb8832b43a40e7b14ae93019",
+        "GUID:88afae19c57ccc44da20d5f9bb1f4fff",
+        "GUID:6b151b9c2f86c5f4695034e165297c57"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

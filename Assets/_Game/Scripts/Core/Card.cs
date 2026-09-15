@@ -1,4 +1,5 @@
 using System;
+using RockPaperPistol.Utils;
 
 namespace RockPaperPistol.Core
 {
@@ -6,15 +7,6 @@ namespace RockPaperPistol.Core
     {
         Basic = 0,
         Pistol = 1
-    }
-
-    public enum PistolId
-    {
-        None = 0,
-        Pistoleiro = 1,
-        Estatua = 2,
-        Mumia = 3,
-        Pirata = 4
     }
 
     public readonly struct Card : IEquatable<Card>

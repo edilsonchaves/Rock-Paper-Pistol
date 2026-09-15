@@ -1,10 +1,7 @@
 {
     "name": "RockPaperPistol.Utils",
     "rootNamespace": "",
-    "references": [
-        "GUID:08a227fb752805f4587bf85cd134e044",
-        "GUID:aa55e9ba2d563cb49ac52dc12f7e83a0"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

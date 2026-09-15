@@ -1,3 +1,5 @@
+using RockPaperPistol.Utils;
+
 namespace RockPaperPistol.Core
 {
     public static class CardComparer

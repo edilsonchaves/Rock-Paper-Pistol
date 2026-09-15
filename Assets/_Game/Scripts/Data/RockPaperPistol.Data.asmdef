@@ -2,7 +2,8 @@
     "name": "RockPaperPistol.Data",
     "rootNamespace": "RockPaperPistol.Data",
     "references": [
-        "RockPaperPistol.Core"
+        "RockPaperPistol.Core",
+        "RockPaperPistol.Utils"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: CardRock 2
   m_EditorClassIdentifier: RockPaperPistol.Data::RockPaperPistol.Data.CardNormalDefinition
   Kind: 0
-  CardImage: {fileID: 0}
+  CardImage: {fileID: -1361828490899542312, guid: 1c50c9ae87ab2ae4ea708551a4fa2521, type: 3}
   Suit: 0
-  Value: 1
+  Value: 2
