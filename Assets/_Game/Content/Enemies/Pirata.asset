@@ -19,13 +19,14 @@ MonoBehaviour:
   Pistol: 4
   PistolAvailableFromTurn: 1
   Sequence:
-  - {fileID: 11400000, guid: f386a64c5c191f949b3363232d83f8ac, type: 2}
-  - {fileID: 11400000, guid: d028fe1de19aebe4ca36631f6d391d3d, type: 2}
-  - {fileID: 11400000, guid: e9d877bdf68981e409256c290fc50eb3, type: 2}
-  - {fileID: 11400000, guid: 4dbd1624c813f32478297fd8e2de1abe, type: 2}
-  - {fileID: 11400000, guid: 564b317ab126893409d3d9eef1ae2a23, type: 2}
-  - {fileID: 11400000, guid: 53550f0e9dfbd24439acc6f4a1794cf9, type: 2}
-  - {fileID: 11400000, guid: e51ea72782f400c4186072f1bd03967d, type: 2}
-  - {fileID: 11400000, guid: 2e3f5ad93c3bf2d4cb07c40d9546c3e4, type: 2}
-  - {fileID: 11400000, guid: 88c352e0a4332a842bb6df54754f5501, type: 2}
+  - {fileID: 11400000, guid: b8c5dd5b721cbd6458cb6de0485aef3f, type: 2}
+  - {fileID: 11400000, guid: 56ce45d905fc2a6458d404bbc764a15f, type: 2}
+  - {fileID: 11400000, guid: ff0dbb042a273a5488cd382a9f202b72, type: 2}
+  - {fileID: 11400000, guid: 98005de25e8e15b4f92802485e35d809, type: 2}
+  - {fileID: 11400000, guid: b8c5dd5b721cbd6458cb6de0485aef3f, type: 2}
+  - {fileID: 11400000, guid: 56ce45d905fc2a6458d404bbc764a15f, type: 2}
+  - {fileID: 11400000, guid: ff0dbb042a273a5488cd382a9f202b72, type: 2}
+  - {fileID: 11400000, guid: 98005de25e8e15b4f92802485e35d809, type: 2}
+  - {fileID: 11400000, guid: 98005de25e8e15b4f92802485e35d809, type: 2}
+  - {fileID: 11400000, guid: ff0dbb042a273a5488cd382a9f202b72, type: 2}
   ImageRoundWinner: {fileID: 77583153332480640, guid: e4af8fce05431e94d8754f7e1a75367e, type: 3}

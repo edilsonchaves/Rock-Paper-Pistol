@@ -459,11 +459,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3672115266337484133, guid: c0b7b2ed0c7dff74e80ba1ed2916b1c5, type: 3}
   m_PrefabInstance: {fileID: 2073005448115411090}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &815228206 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6617030937928089962, guid: e4e127a3b46bc1c43a2f9cb41e591590, type: 3}
-  m_PrefabInstance: {fileID: 1435300351998655043}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &845413151
 GameObject:
   m_ObjectHideFlags: 0
@@ -611,14 +606,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4835656944350822160, guid: e4e127a3b46bc1c43a2f9cb41e591590, type: 3}
-      propertyPath: _xDif
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4835656944350822160, guid: e4e127a3b46bc1c43a2f9cb41e591590, type: 3}
-      propertyPath: _initialCardSpawnPosition
-      value: 
-      objectReference: {fileID: 815228206}
     - target: {fileID: 5620890100456824610, guid: e4e127a3b46bc1c43a2f9cb41e591590, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -658,10 +645,6 @@ PrefabInstance:
     - target: {fileID: 5620890100456824610, guid: e4e127a3b46bc1c43a2f9cb41e591590, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6617030937928089962, guid: e4e127a3b46bc1c43a2f9cb41e591590, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -12.26
       objectReference: {fileID: 0}
     - target: {fileID: 8125192628545295591, guid: e4e127a3b46bc1c43a2f9cb41e591590, type: 3}
       propertyPath: m_Name

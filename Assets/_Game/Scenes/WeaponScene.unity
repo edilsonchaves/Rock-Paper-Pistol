@@ -1033,12 +1033,17 @@ MonoBehaviour:
   _mummyButton: {fileID: 1472897053}
   _pirateButton: {fileID: 1472663409}
   _stoneStatuedButton: {fileID: 1651170301}
-  _startButton: {fileID: 1973659245}
+  _selectWeaponButton: {fileID: 1973659245}
+  _startButton: {fileID: 1030805703}
   _backMenuButton: {fileID: 768559654}
-  _loadBattleButton: {fileID: 1030805703}
   _weaponMenu: {fileID: 628005767}
   _battleVersusUI: {fileID: 249006761}
   _currentPistolSelect: 0
+  _pistols:
+  - {fileID: 11400000, guid: b8c5dd5b721cbd6458cb6de0485aef3f, type: 2}
+  - {fileID: 11400000, guid: 56ce45d905fc2a6458d404bbc764a15f, type: 2}
+  - {fileID: 11400000, guid: ff0dbb042a273a5488cd382a9f202b72, type: 2}
+  - {fileID: 11400000, guid: 98005de25e8e15b4f92802485e35d809, type: 2}
 --- !u!1 &423370041
 GameObject:
   m_ObjectHideFlags: 0
@@ -3188,7 +3193,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2285840330353196575, guid: b0c47cba0566b4f47b83330d005d5470, type: 3}
       propertyPath: m_Name
-      value: Start Game
+      value: Select Weapon
       objectReference: {fileID: 0}
     - target: {fileID: 4867470345957187727, guid: b0c47cba0566b4f47b83330d005d5470, type: 3}
       propertyPath: m_Colors.m_DisabledColor.a

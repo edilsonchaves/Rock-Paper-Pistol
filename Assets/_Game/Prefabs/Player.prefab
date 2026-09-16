@@ -46,6 +46,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: RockPaperPistol.Unity.Battle::RockPaperPistol.Unity.Battle.PlayerHandCard
   _cardPrefab: {fileID: 1716273916785015517, guid: 9dc970ce5f6dd1d478317ad6be5fd3c2, type: 3}
   _hands: {fileID: 7966825345773257851}
+  _initialCardSpawnPosition: {fileID: 6617030937928089962}
+  _xDif: 2.6
 --- !u!1 &5032308881413121323
 GameObject:
   m_ObjectHideFlags: 0
@@ -103,7 +105,7 @@ Transform:
   m_GameObject: {fileID: 6249712802024952639}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -12.26, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -157,3 +159,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: RockPaperPistol.Player::RockPaperPistol.Player.PlayerControl
   _deck: []
   _hand: {fileID: 4835656944350822160}
+  _currentPlayer: {fileID: 0}

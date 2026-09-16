@@ -1,6 +1,8 @@
 using RockPaperPistol.Utils;
 using UnityEngine;
 using RockPaperPistol.UI.Elements;
+using RockPaperPistol.Data;
+using System.Collections.Generic;
 
 namespace RockPaperPistol.UI
 {
@@ -11,25 +13,29 @@ namespace RockPaperPistol.UI
         [SerializeField] private GenericButton _mummyButton;
         [SerializeField] private GenericButton _pirateButton;
         [SerializeField] private GenericButton _stoneStatuedButton;
+        [SerializeField] private GenericButton _selectWeaponButton;
         [SerializeField] private GenericButton _startButton;
         [SerializeField] private GenericButton _backMenuButton;
+        [SerializeField] private GameObject _weaponMenu;
+        [SerializeField] private GameObject _battleVersusUI;
 
-        [SerializeField] private PistolsEnum _currentPistolSelect;
+        [SerializeField] private PistolId _currentPistolSelect;
+
+        [SerializeField] private List<CardPistolDefinition> _pistols;
 
         private static string SCENE_MENU_NAME = "MainMenu";
         private static string SCENE_GAME_NAME = "SampleScene";
 
-
         void Start()
         {
-            _startButton.SetInteractableButtonState(false);
+            _selectWeaponButton.SetInteractableButtonState(false);
             _gunManButton.Initialize(SelectedButton);
             _mummyButton.Initialize(SelectedButton);
             _pirateButton.Initialize(SelectedButton);
             _stoneStatuedButton.Initialize(SelectedButton);
             _backMenuButton.Initialize(BackMenu);
+            _selectWeaponButton.Initialize(SelectWeapon);
             _startButton.Initialize(StartGame);
-
         }
 
         private void BackMenu()
@@ -37,14 +43,14 @@ namespace RockPaperPistol.UI
             Utils.Utils.LoadScene(SCENE_MENU_NAME);
         }
 
-        private void StartGame()
+        private void SelectWeapon()
         {
-            GameManager.Instance.DefineHeroPistol(_currentPistolSelect);
+            GameManager.Instance.DefineHeroPistol(_pistols[(int) _currentPistolSelect]);
             _weaponMenu.SetActive(false);
             _battleVersusUI.SetActive(true);
         }
 
-        private void LoadBattle()
+        private void StartGame()
         {
             Utils.Utils.LoadScene(SCENE_GAME_NAME);
         }
@@ -57,11 +63,10 @@ namespace RockPaperPistol.UI
             }
             else
             {
-                _currentPistolSelect = (PistolsEnum) buttonIndex;
+                _currentPistolSelect = (PistolId) buttonIndex;
                 _currentSelectedButton = selectedButton;
             }
-            _startButton.SetInteractableButtonState(_currentSelectedButton != null);
-
+            _selectWeaponButton.SetInteractableButtonState(_currentSelectedButton != null);
         }
     }
 }
