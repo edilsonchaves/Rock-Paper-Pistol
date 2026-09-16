@@ -38,7 +38,7 @@ namespace RockPaperPistol.Managers
         void Start()
         {
             _sessionMoment = RunningSessionMoment.WaitingPlayer;
-            _currentEnemy = _gameContent.Enemies[0];
+            _currentEnemy = _gameContent.Enemies[GameManager.Instance.CurrentLevel];
             _enemyBody.SetupEnemy(_currentEnemy, EnemyThrowCard);
             _playerBody.Setup(_playerDeck, PlayerThrowCard, GameManager.Instance.HeroPistol);
             StartCoroutine(GameSession());
@@ -73,7 +73,9 @@ namespace RockPaperPistol.Managers
                 NextTurn();
             }
             yield return null;
-            // Aqui irá verificar quem venceu e quem perdeu ou se precisará da rodada de desempate
+
+            var playerWinner = _playerScore > _enemyScore;
+            GameEvents.UI.OnEndGame?.Invoke(playerWinner,_playerScore, _enemyScore, _playerBody.GetAvatarSprite(), _enemyBody.GetAvatarSprite());
         }
 
         private void ComparePistolCardValue()
