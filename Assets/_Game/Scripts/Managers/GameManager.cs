@@ -1,11 +1,12 @@
 using UnityEngine;
 using RockPaperPistol.Utils;
+using RockPaperPistol.Data;
 public class GameManager : Singleton<GameManager>
 {
-    [SerializeField] private PistolId _heroPistol;
-    public PistolId HeroPistol => _heroPistol;
+    [SerializeField] private CardPistolDefinition _heroPistol;
+    public CardPistolDefinition HeroPistol => _heroPistol;
 
-    public void DefineHeroPistol(PistolId pistol)
+    public void DefineHeroPistol(CardPistolDefinition pistol)
     {
         _heroPistol = pistol;
     }

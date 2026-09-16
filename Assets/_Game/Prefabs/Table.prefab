@@ -116,6 +116,7 @@ MonoBehaviour:
   _tableEnemyCardPosition: {fileID: 5250280714657981497}
   _currentTablePlayerCard: {fileID: 0}
   _currentTableEnemyCard: {fileID: 0}
+  _sessionMoment: 0
   _currentTurn: 0
   _totalTurn: 7
   _playerScore: 0

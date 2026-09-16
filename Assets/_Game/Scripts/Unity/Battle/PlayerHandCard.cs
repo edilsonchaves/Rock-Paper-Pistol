@@ -105,7 +105,6 @@ namespace RockPaperPistol.Unity.Battle
             for (int i = 0; i < count; i++)
             {
                 _views[i].transform.localPosition = new Vector3(_initialCardSpawnPosition.position.x + _xDif * i, 0, 0f);
-                _views[i].transform.localScale = Vector3.one * 0.38f;
             }
         }
 

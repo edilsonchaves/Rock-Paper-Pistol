@@ -29,12 +29,19 @@ namespace RockPaperPistol.Enemy
             List<Card> cards = new List<Card>();
             foreach(var card in _enemyDeck)
             {
-                    if(card is CardNormalDefinition)
-                    {
-                        var normalDefinition = (CardNormalDefinition) card;
-                        Card c = new Card(normalDefinition.Suit,normalDefinition.Value);
-                        cards.Add(c);                  
-                    }
+                if(card is CardNormalDefinition)
+                {
+                    var normalDefinition = (CardNormalDefinition) card;
+                    Card c = new Card(normalDefinition.Suit,normalDefinition.Value);
+                    cards.Add(c);                  
+                }
+
+                if(card is CardPistolDefinition)
+                {
+                    var pistolDefinition = (CardPistolDefinition) card;
+                    Card c = new Card(pistolDefinition.Suit, pistolDefinition.Value);
+                    cards.Add(c);
+                }
             }
 
             _enemyHand.ReceiveCards(cards, _enemyDeck, false, cardSelected);

@@ -40,7 +40,7 @@ namespace RockPaperPistol.Managers
             _sessionMoment = RunningSessionMoment.WaitingPlayer;
             _currentEnemy = _gameContent.Enemies[0];
             _enemyBody.SetupEnemy(_currentEnemy, EnemyThrowCard);
-            _playerBody.Setup(_playerDeck, PlayerThrowCard);
+            _playerBody.Setup(_playerDeck, PlayerThrowCard, GameManager.Instance.HeroPistol);
             StartCoroutine(GameSession());
         }
 
@@ -62,6 +62,101 @@ namespace RockPaperPistol.Managers
                 yield return new WaitUntil(() => _enemyCardData != null);
 
                 // Comparar resultado do turno atual
+                if(_playerCardData is CardNormalDefinition && _enemyCardData is CardNormalDefinition)
+                    CompareNormalCardValue();
+
+                if(_playerCardData is CardPistolDefinition || _enemyCardData is CardPistolDefinition)
+                    ComparePistolCardValue();
+
+                yield return new WaitForSeconds(3f);
+                CleanTable();
+                NextTurn();
+            }
+            yield return null;
+            // Aqui irá verificar quem venceu e quem perdeu ou se precisará da rodada de desempate
+        }
+
+        private void ComparePistolCardValue()
+        {
+            if(_playerCardData is CardPistolDefinition && _enemyCardData is CardPistolDefinition)
+            {
+                DrawTurnResult();
+            }
+            else
+            {
+                if(_playerCardData is CardPistolDefinition)
+                {
+                    var playerWinner = PistolWinner((CardPistolDefinition) _playerCardData, (CardNormalDefinition) _enemyCardData, out bool draw);
+                    if (draw)
+                    {
+                        DrawTurnResult();
+                    }
+                    else
+                    {
+                        VictoryTurnResult(playerWinner);
+                    }
+                }
+                else
+                {
+                    var enemyWinner = PistolWinner((CardPistolDefinition) _enemyCardData, (CardNormalDefinition) _playerCardData, out bool draw);
+                    if (draw)
+                    {
+                        DrawTurnResult();
+                    }
+                    else
+                    {
+                       VictoryTurnResult(!enemyWinner);
+                    }                    
+                }                
+            }
+        }
+
+        private bool PistolWinner(CardPistolDefinition pistol, CardNormalDefinition simpleCard, out bool draw){
+            bool result = false;
+            draw = false;
+            switch (pistol.Type)
+            {
+                case PistolId.Pistoleiro:
+                    result = GunmanPistol(pistol, simpleCard);
+                break;
+                case PistolId.Mumia:
+                    result = MummyPistol(pistol, simpleCard, out bool resultDraw);
+                    draw = resultDraw;
+                break;
+                case PistolId.Pirata:
+                    result = PiratePistol(pistol, simpleCard);
+                break;
+                case PistolId.Estatua:
+                    result = StonePistol(pistol, simpleCard);
+                break;
+            }
+            return result;
+        }
+        private bool GunmanPistol(CardDefinition pistol, CardNormalDefinition simpleCard)
+        {
+            return simpleCard.Value < 3;
+        }
+
+        private bool MummyPistol(CardPistolDefinition pistol, CardNormalDefinition simpleCard, out bool draw)
+        {
+            var pistolValue = pistol.Value + Mathf.FloorToInt(_currentTurn / 2);
+            draw = false;
+            draw = simpleCard.Value == pistolValue;
+            return simpleCard.Value < pistolValue;
+        }
+
+        private bool StonePistol(CardDefinition pistol, CardNormalDefinition simpleCard)
+        {
+            return simpleCard.Suit != Suit.Paper;
+        }
+
+        private bool PiratePistol(CardDefinition pistol, CardNormalDefinition simpleCard)
+        {
+            return simpleCard.Suit != Suit.Rock;
+        }
+
+        private void CompareNormalCardValue()
+        {
                 var playerSuit = Suit.Rock;
                 if(_playerCardData is CardNormalDefinition)
                 {
@@ -81,38 +176,41 @@ namespace RockPaperPistol.Managers
 
                 if(playerValue == enemyValue)
                 {
-                    _steak += 1;
-                    GameEvents.UI.onWinnerUpdate?.Invoke(_currentTurn, null);
+                    DrawTurnResult();
                 }
                 else
                 {
-                    if(playerValue > enemyValue)
-                    {
-                        _playerScore += _steak;
-                        GameEvents.UI.onWinnerUpdate?.Invoke(_currentTurn, _playerBody.GetAvatarSprite());
-                    }
-                    else
-                    {
-                        _enemyScore += _steak;
-                        GameEvents.UI.onWinnerUpdate?.Invoke(_currentTurn, _enemyBody.GetAvatarSprite());
-                    }
-
-                    _steak = 1;
+                    VictoryTurnResult(playerValue > enemyValue);
                 }
-
-                yield return new WaitForSeconds(3f);
-                CleanTable();
-                NextTurn();
-            }
-            yield return null;
-            // Aqui irá verificar quem venceu e quem perdeu ou se precisará da rodada de desempate
         }
-
         private void CleanTable()
         {
            Destroy(_currentTablePlayerCard.gameObject);
            Destroy(_currentTableEnemyCard.gameObject);
         }
+
+        private void DrawTurnResult()
+        {
+            _steak += 1;
+            GameEvents.UI.onWinnerUpdate?.Invoke(_currentTurn, null);
+        }
+
+        private void VictoryTurnResult(bool isPlayerWinner)
+        {
+            if(isPlayerWinner)
+            {
+                _playerScore += _steak;
+                GameEvents.UI.onWinnerUpdate?.Invoke(_currentTurn, _playerBody.GetAvatarSprite());
+            }
+            else
+            {
+                _enemyScore += _steak;
+                GameEvents.UI.onWinnerUpdate?.Invoke(_currentTurn, _enemyBody.GetAvatarSprite());
+            }
+
+            _steak = 1;
+        }
+
         private void NextTurn()
         {
             _playerCardData = null;

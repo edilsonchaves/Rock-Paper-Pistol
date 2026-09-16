@@ -15,7 +15,7 @@ namespace RockPaperPistol.Player
         [SerializeField] private PlayerHandCard _hand;
 
         [SerializeField] private DeckDefinition _currentPlayer;
-        public void Setup(DeckDefinition data, Action<CardView, CardDefinition> cardSelected)
+        public void Setup(DeckDefinition data, Action<CardView, CardDefinition> cardSelected, CardPistolDefinition pistol)
         {
             _currentPlayer = data;
             foreach(var card in data.Sequence.Shuffle())
@@ -23,15 +23,23 @@ namespace RockPaperPistol.Player
                 _deck.Add(card);
             }
 
+            _deck.Add(pistol);
             List<Card> cards = new List<Card>();
             foreach(var card in _deck)
             {
-                    if(card is CardNormalDefinition)
-                    {
-                        var normalDefinition = (CardNormalDefinition) card;
-                        Card c = new Card(normalDefinition.Suit,normalDefinition.Value);
-                        cards.Add(c);
-                    }
+                if(card is CardNormalDefinition)
+                {
+                    var normalDefinition = (CardNormalDefinition) card;
+                    Card c = new Card(normalDefinition.Suit,normalDefinition.Value);
+                    cards.Add(c);
+                }
+
+                if(card is CardPistolDefinition)
+                {
+                    var pistolDefinition = (CardPistolDefinition) card;
+                    Card c = new Card(pistolDefinition.Suit, pistolDefinition.Value);
+                    cards.Add(c);
+                }
             }
 
             _hand.ReceiveCards(cards, _deck, true, true, cardSelected);

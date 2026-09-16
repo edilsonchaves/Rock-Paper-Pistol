@@ -59,7 +59,6 @@ namespace RockPaperPistol.Unity.Battle
 
         public void EnemySelected()
         {
-            Debug.Log("Testando");
             _body.sprite = _card.CardImage;
             _cardSelection?.Invoke(this, _card);
         }
