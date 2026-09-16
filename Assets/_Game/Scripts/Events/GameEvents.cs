@@ -24,6 +24,7 @@ namespace RockPaperPistol.Events
             public static Action<int, GenericButton> onSelectPistol;
             public static Action<int, int> onRoundUpdate;
             public static Action<int, Sprite> onWinnerUpdate;
+            public static Action<bool, int, int, Sprite, Sprite> OnEndGame;
 
         }
     }

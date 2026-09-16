@@ -1,7 +1,6 @@
 using UnityEngine;
 using TMPro;
 using RockPaperPistol.Events;
-using System.Runtime.Serialization;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
@@ -16,12 +15,12 @@ namespace RockPaperPistol.UI
         {
             GameEvents.UI.onRoundUpdate += UpdateRoundText;
             GameEvents.UI.onWinnerUpdate += UpdateImageRoundWinner;
-
         }
 
         void OnDisable()
         {
             GameEvents.UI.onRoundUpdate -= UpdateRoundText;
+            GameEvents.UI.onWinnerUpdate -= UpdateImageRoundWinner;
         }
 
         private void UpdateRoundText(int currentRound, int totalRound)

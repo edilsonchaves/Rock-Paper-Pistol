@@ -52,6 +52,7 @@ namespace RockPaperPistol.UI
 
         private void StartGame()
         {
+            GameManager.Instance.SetLevel(0);
             Utils.Utils.LoadScene(SCENE_GAME_NAME);
         }
 
